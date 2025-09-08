@@ -1,7 +1,7 @@
-// import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-// import { storage } from "@/lib/firebaseConfig";
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from "@/lib/firebaseConfig";
 import { useState } from "react";
-// import saveToFireBase from "@/pages/api/saveToFirebase";
+import saveToFireBase from "@/pages/api/saveToFirebase";
 
 export default function FileUpload() {
   const [selectedFile, setSelectedFile] = useState(null);
