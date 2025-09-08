@@ -20,6 +20,8 @@ module.exports = withMT({
           90: '#00c1ffe6',
           100: '#0099FF',
         },
+        'saphire': '#2B50AA',
+        'plum': '#8740b2'
       },
       fontFamily: {
         'headings': ['Rubik', 'sans-serif'],
