@@ -1,5 +1,6 @@
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from "@/lib/firebaseConfig";
+import { auth } from "@/lib/firebaseConfig";
 import { useState } from "react";
 import saveToFireBase from "@/pages/api/saveToFirebase";
 
@@ -8,56 +9,73 @@ export default function FileUpload() {
   const [selectedFileText, setSelectedFileText] = useState("Click to upload or drag and drop");
   const [status, setStatus] = useState(null);
 
-  const handleFile = async (e) => {
-    e.preventDefault();
-    if (e.target.files[0]) {
-      setSelectedFile(e.target.files[0])
-      setSelectedFileText(e.target.files[0].name)
-    }
-    else {
-      setSelectedFile(null)
-      setSelectedFileText("Click to upload or drag and drop")
+  const handleFile = (e) => {
+    const file = e?.target?.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setSelectedFileText(file.name || "Unnamed file");
+    } else {
+      setSelectedFile(null);
+      setSelectedFileText("Click to upload or drag and drop");
     }
   };
 
   // Function to upload the resume to Firebase Storage and get the URL
   const uploadResume = async (file) => {
-    const storageRef = ref(storage, `resumes/${file.name}`);  // Save to "resumes" folder
-    const snapshot = await uploadBytes(storageRef, file);  // Upload file
-    const downloadURL = await getDownloadURL(snapshot.ref);  // Get file URL
-    return downloadURL;
+    const uid = auth.currentUser?.uid;
+    const fileName = file?.name || `resume_${Date.now()}.pdf`;
+    const path = uid ? `resumes/${uid}/${fileName}` : `resumes/public/${fileName}`;
+    const storageRef = ref(storage, path);
+    const snapshot = await uploadBytes(storageRef, file, { contentType: file?.type || 'application/pdf' });
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    return { downloadURL, path, fileName };
   };
 
-  async function storeEmployeeInfo(e) {
+  async function storeUserResume(e) {
     e.preventDefault();
-    let resumeURL = '';
-    if (selectedFile) {
-      resumeURL = await uploadResume(selectedFile);
+
+    const user = auth.currentUser;
+    if (!user) {
+      setStatus({ type: "error", message: "Please sign in before analyzing your resume." });
+      return;
     }
 
-    const formData = {
-      resume: resumeURL
-    };
-    console.log(formData);
+    if (!selectedFile) {
+      setStatus({ type: "error", message: "Please select a PDF to upload." });
+      return;
+    }
 
     try {
+      const { downloadURL, path, fileName } = await uploadResume(selectedFile);
+
+      const formData = {
+        userId: user.uid,
+        file: {
+          path,
+          downloadURL,
+          name: fileName,
+          size: selectedFile.size,
+          contentType: selectedFile.type || 'application/pdf'
+        },
+        status: 'uploaded'
+      };
+
       await saveToFireBase(formData, 'resumes');
-      console.log("Data successfully saved to Firestore.");
-      setStatus({ type: "success", message: "Data Successfully Uploaded!" });
+      setStatus({ type: "success", message: "Resume uploaded. Starting analysis..." });
       e.target.reset();
       setSelectedFile(null);
       setSelectedFileText("Click to upload or drag and drop");
     } catch (error) {
-      console.error("Failed to save data: ", error.message);
-      setStatus({ type: "error", message: "Failed to save data. Please try again." });
+      console.error("Failed to save data: ", error?.message || error);
+      setStatus({ type: "error", message: "Failed to upload. Please try again." });
     }
   }
 
 
   return (
-    <div className="py-24 text-sm md:text-md">
+    <div className="pb-24 text-sm md:text-md">
       <section className="mx-4 xl:mx-auto max-w-5xl flex flex-col bg-artic-blue rounded-lg p-8 md:px-20 md:py-12">
-        <form autoComplete="off" className="font-main" onSubmit={storeEmployeeInfo}>
+        <form autoComplete="off" className="font-main" onSubmit={storeUserResume}>
           <div className="flex flex-col w-full">
             <h2 className="font-semibold text-2xl font-headings my-4">
               Upload Resume
@@ -70,7 +88,7 @@ export default function FileUpload() {
                 <p className="mb-2 text-sm text-gray-500">{selectedFileText}</p>
                 <p className="text-xs text-gray-500 font-semibold">PDF</p>
               </div>
-              <input required id="resumeDropzone" type="file" className="hidden" accept="application/pdf" onChange={(e) => handleFile(e)} />
+              <input required id="resumeDropzone" type="file" className="hidden" accept="application/pdf" onChange={handleFile} />
             </label>
           </div>
 

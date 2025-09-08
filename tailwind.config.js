@@ -21,7 +21,8 @@ module.exports = withMT({
           100: '#0099FF',
         },
         'saphire': '#2B50AA',
-        'plum': '#8740b2'
+        'plum': '#8740b2',
+        'top-orange': '#FF9966'
       },
       fontFamily: {
         'headings': ['Rubik', 'sans-serif'],
@@ -29,7 +30,8 @@ module.exports = withMT({
         'numbers': ['Onest', 'sans-serif']
       },
       backgroundImage: {
-        'gradient-45': 'linear-gradient(45deg, var(--tw-gradient-stops))'
+        'gradient-45': 'linear-gradient(45deg, var(--tw-gradient-stops))',
+        'gradient-orange': 'linear-gradient(135deg, #ff9966 0%, #ff5e62 100%)'
       }
     }
   },
