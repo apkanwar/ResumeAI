@@ -99,7 +99,7 @@ export default function FileUpload() {
           )}
 
           <div className="mt-10 mb-4">
-            <button type="submit" className="bg-plum/90 text-white rounded-full py-1 px-6 hover:bg-plum transition-opacity duration-300 text-lg font-medium font-headings w-fit">
+            <button type="submit" className="bg-plum/90 text-white rounded-full py-1 px-6 hover:bg-plum transition-opacity duration-300 text-lg font-medium font-main w-fit">
               Analyze
             </button>
           </div>
