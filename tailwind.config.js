@@ -31,7 +31,8 @@ module.exports = withMT({
       },
       backgroundImage: {
         'gradient-45': 'linear-gradient(45deg, var(--tw-gradient-stops))',
-        'gradient-orange': 'linear-gradient(135deg, #ff9966 0%, #ff5e62 100%)'
+        'gradient-orange': 'linear-gradient(135deg, #ff9966 0%, #ff5e62 100%)',
+        'google': 'linear-gradient(to right, #4285F4, #34A853, #FBBC05, #EA4335)',
       }
     }
   },

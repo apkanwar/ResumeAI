@@ -1,8 +1,6 @@
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from "@/lib/firebaseConfig";
-import { auth } from "@/lib/firebaseConfig";
 import { useState } from "react";
-import saveToFireBase from "@/pages/api/saveToFirebase";
+import { auth } from "@/lib/firebaseConfig";
+import { saveToFirebase } from "@/lib/firebaseCalls";
 
 export default function FileUpload() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -20,48 +18,23 @@ export default function FileUpload() {
     }
   };
 
-  // Function to upload the resume to Firebase Storage and get the URL
-  const uploadResume = async (file) => {
-    const uid = auth.currentUser?.uid;
-    const fileName = file?.name || `resume_${Date.now()}.pdf`;
-    const path = uid ? `resumes/${uid}/${fileName}` : `resumes/public/${fileName}`;
-    const storageRef = ref(storage, path);
-    const snapshot = await uploadBytes(storageRef, file, { contentType: file?.type || 'application/pdf' });
-    const downloadURL = await getDownloadURL(snapshot.ref);
-    return { downloadURL, path, fileName };
-  };
-
   async function storeUserResume(e) {
     e.preventDefault();
 
     const user = auth.currentUser;
     if (!user) {
-      setStatus({ type: "error", message: "Please sign in before analyzing your resume." });
+      setStatus({ type: "error", message: "Please sign in before attempting to analyze your resume." });
       return;
     }
-
     if (!selectedFile) {
-      setStatus({ type: "error", message: "Please select a PDF to upload." });
+      setStatus({ type: "error", message: "Please select a file to upload." });
       return;
     }
 
     try {
-      const { downloadURL, path, fileName } = await uploadResume(selectedFile);
+      await saveToFirebase(selectedFile, { status: 'uploaded' });
 
-      const formData = {
-        userId: user.uid,
-        file: {
-          path,
-          downloadURL,
-          name: fileName,
-          size: selectedFile.size,
-          contentType: selectedFile.type || 'application/pdf'
-        },
-        status: 'uploaded'
-      };
-
-      await saveToFireBase(formData, 'resumes');
-      setStatus({ type: "success", message: "Resume uploaded. Starting analysis..." });
+      setStatus({ type: "success", message: "Resume Uploaded." });
       e.target.reset();
       setSelectedFile(null);
       setSelectedFileText("Click to upload or drag and drop");
@@ -70,7 +43,6 @@ export default function FileUpload() {
       setStatus({ type: "error", message: "Failed to upload. Please try again." });
     }
   }
-
 
   return (
     <div className="pb-24 text-sm md:text-md">
@@ -86,9 +58,9 @@ export default function FileUpload() {
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
                 </svg>
                 <p className="mb-2 text-sm text-gray-500">{selectedFileText}</p>
-                <p className="text-xs text-gray-500 font-semibold">PDF</p>
+                <p className="text-xs text-gray-500 font-semibold">PDF or DOCX</p>
               </div>
-              <input required id="resumeDropzone" type="file" className="hidden" accept="application/pdf" onChange={handleFile} />
+              <input required id="resumeDropzone" type="file" className="hidden" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={handleFile} />
             </label>
           </div>
 
@@ -100,7 +72,7 @@ export default function FileUpload() {
 
           <div className="mt-10 mb-4">
             <button type="submit" className="bg-plum/90 text-white rounded-full py-1 px-6 hover:bg-plum transition-opacity duration-300 text-lg font-medium font-main w-fit">
-              Analyze
+              Parse and Analyze
             </button>
           </div>
         </form>

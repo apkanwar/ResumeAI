@@ -70,7 +70,7 @@ export default function SignInPill() {
             ) : (
                 <div className="flex flex-row bg-artic-blue rounded-full w-fit gap-2 p-1 font-headings font-medium">
                     <button onClick={handleGoogleSignIn}
-                        className="flex flex-row justify-center gap-2 bg-gradient-to-r from-[#4285F4] via-[#34A853] via-[#FBBC05] to-[#EA4335] rounded-full font-main p-[2px]">
+                        className="flex flex-row justify-center gap-2 bg-google rounded-full font-main p-[2px]">
                         <span className="bg-white rounded-full flex items-center gap-2 px-4 py-1 hover:bg-gray-100 w-full">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="h-5 w-5">
                                 <path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.6 30.47 0 24 0 14.63 0 6.4 5.38 2.56 13.22l7.98 6.19C12.43 13.24 17.74 9.5 24 9.5z" />
