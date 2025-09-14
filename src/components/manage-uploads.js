@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { auth } from '@/lib/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-import { getUserUploads, deleteResume, deleteSelected as deleteSelectedFn } from '@/lib/firebaseCalls';
+import { getUserUploads, deleteResume, deleteSelected as deleteSelectedFn } from '@/lib/firebase-resume';
 import Link from 'next/link';
 import { Delete, Download, PlayCircleFilledOutlined, RemoveRedEye } from '@mui/icons-material';
 

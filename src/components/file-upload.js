@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { auth } from "@/lib/firebaseConfig";
-import { saveToFirebase, saveParsedSections } from "@/lib/firebaseCalls";
+import { saveToFirebase, saveParsedSections } from "@/lib/firebase-resume";
 import { Close } from "@mui/icons-material";
 
 export default function FileUpload() {
