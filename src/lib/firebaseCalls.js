@@ -4,7 +4,7 @@ import {
 } from 'firebase/storage';
 import {
     collection, query, where, orderBy, getDocs,
-    doc, deleteDoc, addDoc, serverTimestamp
+    doc, deleteDoc, addDoc, serverTimestamp, updateDoc
 } from 'firebase/firestore';
 
 
@@ -75,4 +75,25 @@ export async function deleteSelected(items = []) {
         if (!it || !it.id) continue;
         await deleteResume(it.id, it.path);
     }
+}
+
+// Update Firestore Document with Parsed Sections
+
+// 3) Save parsed schema to the same Firestore document and mark as parsed
+export async function saveParsedSections(id, parsed) {
+    if (!id) throw new Error('Missing resume id');
+    return await updateDoc(doc(db, 'resumes', id), {
+        status: 'parsed',
+        analysis: {
+            sections: {
+                contact: parsed.contact || {},
+                education: parsed.education || '',
+                skills: parsed.skills || [],
+                skillsByCategory: parsed.skillsByCategory || {},
+                experience: parsed.experience || [],
+                references: parsed.references || ''
+            }
+        },
+        updatedAt: serverTimestamp()
+    });
 }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { auth } from "@/lib/firebaseConfig";
-import { saveToFirebase } from "@/lib/firebaseCalls";
+import { saveToFirebase, saveParsedSections } from "@/lib/firebaseCalls";
+import { Close } from "@mui/icons-material";
 
 export default function FileUpload() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -26,21 +27,31 @@ export default function FileUpload() {
       setStatus({ type: "error", message: "Please sign in before attempting to analyze your resume." });
       return;
     }
-    if (!selectedFile) {
-      setStatus({ type: "error", message: "Please select a file to upload." });
-      return;
-    }
 
     try {
-      await saveToFirebase(selectedFile, { status: 'uploaded' });
+      // 1) Upload to Storage + create Firestore doc
+      const { id } = await saveToFirebase(selectedFile, { status: 'uploaded' });
 
-      setStatus({ type: "success", message: "Resume Uploaded." });
+      // 2) Parse locally on the server via Groq (DOCX/PDF -> structured JSON)
+      const form = new FormData();
+      form.append('file', selectedFile);
+      const resp = await fetch('/api/parse-ai', { method: 'POST', body: form });
+      const data = await resp.json();
+      if (!resp.ok || !data?.ok) {
+        throw new Error(data?.error || 'Parse failed');
+      }
+      const parsed = data.parsed || {};
+
+      // 3) Save parsed schema via shared helper
+      await saveParsedSections(id, parsed);
+
+      setStatus({ type: "success", message: "Resume Uploaded and Parsed" });
       e.target.reset();
       setSelectedFile(null);
       setSelectedFileText("Click to upload or drag and drop");
     } catch (error) {
-      console.error("Failed to save data: ", error?.message || error);
-      setStatus({ type: "error", message: "Failed to upload. Please try again." });
+      console.error("Failed to save/parse: ", error?.message || error);
+      setStatus({ type: "error", message: "Failed to parse. Please try again." });
     }
   }
 
@@ -65,8 +76,15 @@ export default function FileUpload() {
           </div>
 
           {status && (
-            <div className={`p-4 mt-8 ${status.type === "success" ? "bg-green-100 text-green-700 border-green-700" : "bg-red-100 text-red-700 border-red-700"} border rounded-lg`}>
-              {status.message}
+            <div className={`flex flex-row items-center justify-between relative p-4 mt-8 ${status.type === "success" ? "bg-green-100 text-green-700 border-green-700" : "bg-red-100 text-red-700 border-red-700"} border rounded-lg`}>
+              <span>{status.message}</span>
+              <button
+                type="button"
+                onClick={() => setStatus(null)}
+                className=" text-dm-black hover:bg-gray-400 hover:text-gray-700 rounded-full transition ease-in duration-200"
+              >
+                <Close fontSize="small" />
+              </button>
             </div>
           )}
 
