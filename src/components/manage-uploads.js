@@ -4,41 +4,45 @@ import { auth } from '@/lib/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserUploads, deleteResume, deleteSelected as deleteSelectedFn } from '@/lib/firebaseCalls';
 import Link from 'next/link';
+import { Delete, Download, PlayCircleFilledOutlined, RemoveRedEye } from '@mui/icons-material';
 
 export default function ManageUploads() {
   const [uploads, setUploads] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [status, setStatus] = useState({ state: 'idle', message: '' });
   const [busyId, setBusyId] = useState(null); // track an item being deleted
   const [uid, setUid] = useState(null);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
 
+  // Checking Auth State
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => setUid(u ? u.uid : null));
     return () => unsub();
   }, []);
 
+  // Fetching Uploads for User
   useEffect(() => {
-    if (uid === null) { setLoading(false); setUploads([]); return; }
+    if (uid === null) {
+      setStatus({ state: 'signed-out', message: 'Please Sign In to View Uploads' });
+      setUploads([]);
+      return;
+    }
 
     (async () => {
       try {
-        setLoading(true);
-        setError('');
+        setStatus({ state: 'loading', message: 'Fetching Uploads' });
         const list = await getUserUploads();
         setUploads(list);
+        setStatus({ state: 'idle', message: '' });
       } catch (e) {
-        console.error('[uploads:getUserUploads]', e);
-        setError(e?.message || 'Failed to fetch uploads.');
-      } finally {
-        setLoading(false);
+        console.error('Error Fetching Uploads', e);
+        setStatus({ state: 'error', message: 'Error Fetching Uploads, Please Try Again Later' });
       }
     })();
   }, [uid]);
 
+  // Seletion Logic
   const hasUploads = uploads.length > 0;
-
   const toggleOne = (id) => {
     setSelectedIds(prev => {
       const next = new Set(prev);
@@ -52,21 +56,30 @@ export default function ManageUploads() {
     else { setSelectedIds(new Set(uploads.map(u => u.id))); }
   };
 
+  const handleAnalyze = async (item) => {
+    // TODO: implement analyze functionality later
+  };
+
+  const viewAnalysis = async (item) => {
+    // TODO: implement analyze functionality later
+  };
+
   const handleDelete = async (item) => {
     if (!item?.id) return;
     const ok = window.confirm('Delete this upload? This cannot be undone.');
     if (!ok) return;
 
     setBusyId(item.id);
-    setError('');
+    setStatus({ state: 'loading', message: 'Deleting…' });
 
     try {
       await deleteResume(item.id, item.file.path);
       const list = await getUserUploads();
       setUploads(list);
+      setStatus({ state: 'idle', message: '' });
     } catch (e) {
-      console.error(e);
-      setError('Failed to delete.');
+      console.error('Delelte Error', e);
+      setStatus({ state: 'error', message: 'Failed to Delete.' });
     } finally {
       setBusyId(null);
     }
@@ -77,7 +90,7 @@ export default function ManageUploads() {
     const ok = window.confirm(`Delete ${selectedIds.size} item(s)? This cannot be undone.`);
     if (!ok) return;
     setBulkBusy(true);
-    setError('');
+    setStatus({ state: 'loading', message: 'Deleting selected…' });
     try {
       const idSet = new Set(selectedIds);
       const items = uploads
@@ -87,16 +100,17 @@ export default function ManageUploads() {
       setSelectedIds(new Set());
       const list = await getUserUploads();
       setUploads(list);
+      setStatus({ state: 'idle', message: '' });
     } catch (e) {
-      console.error('[bulk delete]', e);
-      setError('One or more items failed to delete.');
+      console.error('Bulk Delete Error', e);
+      setStatus({ state: 'error', message: 'One or more items failed to delete.' });
     } finally {
       setBulkBusy(false);
     }
   };
 
   return (
-    <div className="pb-24 text-sm">
+    <div className="pb-24">
       <section className="mx-4 xl:mx-auto max-w-5xl flex flex-col bg-artic-blue rounded-lg p-8 md:px-20 md:py-12 font-main">
         <div className="flex flex-col w-full">
           <h2 className="font-semibold text-2xl font-headings my-4">Manage Uploads</h2>
@@ -107,16 +121,16 @@ export default function ManageUploads() {
             </div>
           )}
 
-          {loading && (
-            <div className="animate-pulse text-lg">Loading uploads…</div>
+          {status.state === 'loading' && (
+            <div className="animate-pulse rounded-md border border-blue-200 bg-blue-50 p-3 text-blue-900 text-lg">{status.message || 'Fetching Uploads…'}</div>
           )}
 
-          {error && (
-            <div className="rounded-md border text-lg border-red-200 bg-red-50 p-3 text-red-700">{error}</div>
+          {status.state === 'error' && (
+            <div className="rounded-md border text-lg border-red-200 bg-red-50 p-3 text-red-700">{status.message || 'Something went wrong.'}</div>
           )}
 
-          {!loading && uid && !hasUploads && (
-            <div className="text-lg">No uploads yet. Upload a PDF or DOCX from the home page.</div>
+          {status.state !== 'loading' && uid && !hasUploads && (
+            <div className="rounded-md border border-blue-200 bg-blue-50 p-3 text-blue-900 text-lg">No uploads yet. Upload a PDF or DOCX from the home page.</div>
           )}
 
           {hasUploads && (
@@ -164,25 +178,50 @@ export default function ManageUploads() {
                             />
                           </td>
                           <td className="px-3 py-2 font-medium">{u.file.name}</td>
-                          <td className="px-3 py-2 capitalize">
-                            {u.status}
-                          </td>
+                          <td className="px-3 py-2 capitalize">{u.status}</td>
                           <td className="px-3 py-2">{created}</td>
                           <td className="px-3 py-2">
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-3">
+                              <button
+                                type="button"
+                                className={`rounded-full border border-dm-black px-2 py-0.5 text-xs ${u.status === 'analyzed' ? 'hover:bg-gray-200' : 'opacity-60 cursor-not-allowed'}`}
+                                disabled={u.status !== 'analyzed'}
+                                onClick={() => viewAnalysis(u)}
+                                title="View Analysis"
+                              >
+                                <RemoveRedEye fontSize='small' />
+                              </button>
                               <Link
                                 href={u.file.url}
                                 className="rounded-full border border-dm-black px-2 py-0.5 text-xs hover:bg-gray-200"
                                 target="_blank"
+                                title="Download File"
                               >
-                                View
+                                <Download fontSize='small' />
                               </Link>
+                              <button
+                                type="button"
+                                className="rounded-full border border-dm-black px-2 py-0.5 text-xs opacity-60 cursor-not-allowed"
+                                disabled
+                                onClick={() => handleAnalyze(u)}
+                                title="Analyze with AI"
+                              >
+                                <PlayCircleFilledOutlined fontSize='small' />
+                              </button>
                               <button
                                 onClick={() => handleDelete(u)}
                                 className="rounded-full border border-red-700 bg-red-50 px-2 py-0.5 text-xs text-red-700 hover:bg-red-100 disabled:opacity-60"
                                 disabled={bulkBusy || busyId === u.id}
+                                title="Delete Upload"
                               >
-                                {busyId === u.id ? 'Deleting…' : 'Delete'}
+                                {busyId === u.id ? (
+                                  <svg className="animate-spin h-4 w-4 text-red-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                  </svg>
+                                ) : (
+                                  <Delete fontSize="small" />
+                                )}
                               </button>
                             </div>
                           </td>
