@@ -167,8 +167,11 @@ export default function ManageUploads() {
                   <tbody className="divide-y divide-gray-200/60">
                     {uploads.map((u) => {
                       const created = u.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
-                      const s = (u.analysis && u.analysis.ai && u.analysis.ai.scores) ? u.analysis.ai.scores : null;
-                      const overall = Math.round((s.objective + s.subjective + s.design + s.employer) / 4);
+                      const s = u?.analysis?.ai?.scores || null;
+                      let overall = null;
+                      if (s && ['objective', 'subjective', 'design', 'employer'].every(k => typeof s[k] === 'number')) {
+                        overall = Math.round((s.objective + s.subjective + s.design + s.employer) / 4);
+                      }
                       return (
                         <tr key={u.id} className="align-middle">
                           <td className="px-3 py-4">

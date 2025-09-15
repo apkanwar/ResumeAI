@@ -1,7 +1,6 @@
 import { makeAIClient } from "@/lib/aiClient";
 import { computeObjectiveScore, computeDesignScore } from "@/lib/scoring";
-import { db } from "@/lib/firebaseConfig";
-import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { adminDb } from "@/lib/firebaseAdmin";
 import { requireRole } from '@/lib/requireUser';
 
 const SYSTEM_MSG = `
@@ -35,17 +34,17 @@ export default async function handler(req, res) {
         if (!resumeId) return res.status(400).json({ ok: false, error: "Missing resumeId" });
 
         // 1) Load resume (must be parsed already)
-        const rRef = doc(db, "resumes", String(resumeId));
-        const rSnap = await getDoc(rRef);
-        if (!rSnap.exists()) return res.status(404).json({ ok: false, error: "Resume not found" });
+        const rRef = adminDb.collection('resumes').doc(String(resumeId));
+        const rSnap = await rRef.get();
+        if (!rSnap.exists) return res.status(404).json({ ok: false, error: 'Resume not found' });
         const resume = rSnap.data();
         const sections = resume?.analysis?.sections || {};
         const rawText = resume?.analysis?.text || joinSectionsText(sections);
 
         // 2) Load user profile
-        const pRef = doc(db, "profiles", String(resume.userId));
-        const pSnap = await getDoc(pRef);
-        const profile = pSnap.exists() ? pSnap.data() : {};
+        const pRef = adminDb.collection('profiles').doc(String(resume.userId));
+        const pSnap = await pRef.get();
+        const profile = pSnap.exists ? pSnap.data() : {};
 
         // 3) Rules scores
         const { objective, breakdown: objBreakdown } = computeObjectiveScore(rawText, sections);
@@ -91,23 +90,25 @@ export default async function handler(req, res) {
             employer: clamp0to100(llm.employerScore ?? 70),
         };
 
-        await updateDoc(rRef, {
-            status: "analyzed",
-            analysis: {
-                ...(resume.analysis || {}),
-                ai: {
-                    scores,
-                    breakdown: { objective: objBreakdown, design: desBreakdown },
-                    feedback: {
-                        subjective: llm.subjectiveFeedback || [],
-                        employer: llm.employerFeedback || [],
-                        highlights: llm.highlights || [],
-                        risks: llm.risks || [],
-                        suggestions: llm.suggestions || [],
-                    },
-                },
+        await rRef.update({
+          status: 'analyzed',
+          analysis: {
+            ...(resume.analysis || {}),
+            ai: {
+              scores,
+              breakdown: { objective: objBreakdown, design: desBreakdown },
+              feedback: {
+                subjective: llm.subjectiveFeedback || [],
+                employer: llm.employerFeedback || [],
+                highlights: llm.highlights || [],
+                risks: llm.risks || [],
+                suggestions: llm.suggestions || [],
+              },
+              model,
+              updatedAt: new Date().toISOString(),
             },
-            updatedAt: serverTimestamp(),
+          },
+          updatedAt: new Date(),
         });
 
         return res.status(200).json({ ok: true, scores });

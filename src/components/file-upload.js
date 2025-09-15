@@ -74,17 +74,23 @@ export default function FileUpload() {
 
       // 4) Run AI analysis right after parsing
       try {
-        await fetch(`/api/analyze-ai?resumeId=${id}`, {
+        const analyzeResp = await fetch(`/api/analyze-ai?resumeId=${id}`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${idToken}` },
         });
+        let analyzeJson = null;
+        try { analyzeJson = await analyzeResp.json(); } catch (_) { }
+        if (!analyzeResp.ok || (analyzeJson && analyzeJson.ok === false)) {
+          const msg = (analyzeJson && (analyzeJson.error || analyzeJson.message)) || `Analyze failed (${analyzeResp.status})`;
+          throw new Error(msg);
+        }
       } catch (err) {
-        console.error("Analyze failed: ", err?.message || err);
-        setStatus({ type: "error", message: "Parsed, but AI analysis failed. You can retry from the uploads page." });
+        console.error('[analyze-ai] ', err?.message || err);
+        setStatus({ type: 'error', message: `Parsed, but analysis failed: ${err?.message || 'Unknown error'}` });
         return;
       }
 
-      setStatus({ type: "success", message: "Resume Uploaded, Parsed, and Analyzed" });
+      setStatus({ type: 'success', message: 'Resume Uploaded, Parsed, and Analyzed' });
       e.target.reset();
       setSelectedFile(null);
       setSelectedFileText("Click to upload or drag and drop");
