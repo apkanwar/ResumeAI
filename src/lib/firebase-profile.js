@@ -61,6 +61,7 @@ export async function createUserProfile(profile = {}) {
         locations: toArray(profile.locations),
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
+        role: 'user'
     };
     await setDoc(ref, payload, { merge: false });
     return true;
