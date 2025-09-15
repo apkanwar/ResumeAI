@@ -53,10 +53,16 @@ export default function FileUpload() {
         return;
       }
 
+      const idToken = await auth.currentUser.getIdToken();
+
       // 2) Parse locally on the server via Groq (DOCX/PDF -> structured JSON)
       const form = new FormData();
       form.append('file', selectedFile);
-      const resp = await fetch('/api/parse-ai', { method: 'POST', body: form });
+      const resp = await fetch('/api/parse-ai', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${idToken}` },
+        body: form,
+      });
       const data = await resp.json();
       if (!resp.ok || !data?.ok) {
         throw new Error(data?.error || 'Parse failed');
@@ -68,7 +74,10 @@ export default function FileUpload() {
 
       // 4) Run AI analysis right after parsing
       try {
-        await fetch(`/api/analyze-ai?resumeId=${id}`, { method: 'POST' });
+        await fetch(`/api/analyze-ai?resumeId=${id}`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${idToken}` },
+        });
       } catch (err) {
         console.error("Analyze failed: ", err?.message || err);
         setStatus({ type: "error", message: "Parsed, but AI analysis failed. You can retry from the uploads page." });

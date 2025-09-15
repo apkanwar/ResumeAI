@@ -1,5 +1,6 @@
 import multiparty from "multiparty";
 import { makeAIClient } from "@/lib/aiClient";
+import { requireRole } from '@/lib/requireUser';
 
 export const config = { api: { bodyParser: false } };
 
@@ -159,6 +160,8 @@ function normalize(out) {
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method Not Allowed" });
+  // Only admin can run AI parsing
+  await requireRole(req, ['admin']);
   try {
     const { files } = await parseForm(req);
     const fileObj = Array.isArray(files?.file) ? files.file[0] : files?.file?.[0] || files?.file;

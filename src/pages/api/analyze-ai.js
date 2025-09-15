@@ -2,6 +2,7 @@ import { makeAIClient } from "@/lib/aiClient";
 import { computeObjectiveScore, computeDesignScore } from "@/lib/scoring";
 import { db } from "@/lib/firebaseConfig";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { requireRole } from '@/lib/requireUser';
 
 const SYSTEM_MSG = `
 You are a senior resume reviewer and hiring manager.
@@ -27,6 +28,8 @@ function sliceTextToBudget(text, fixedOverheadTokens, targetPromptBudget = 7000)
 
 export default async function handler(req, res) {
     if (req.method !== "POST") return res.status(405).json({ ok: false, error: "Method Not Allowed" });
+        // Only admin can run AI analysis
+        await requireRole(req, ['admin']);
     try {
         const { resumeId } = req.query;
         if (!resumeId) return res.status(400).json({ ok: false, error: "Missing resumeId" });
