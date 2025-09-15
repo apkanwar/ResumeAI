@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { auth } from "@/lib/firebaseConfig";
 import { saveToFirebase, saveParsedSections } from "@/lib/firebase-resume";
+import { getUserProfile } from "@/lib/firebase-profile";
 import { Close } from "@mui/icons-material";
 
 export default function FileUpload() {
@@ -28,9 +29,29 @@ export default function FileUpload() {
       return;
     }
 
+    // Fetch user profile to determine role-based access
+    let canUseAI = false;
+    try {
+      const prof = await getUserProfile();
+      const role = (prof && prof.role) ? String(prof.role).toLowerCase() : 'user';
+      canUseAI = role === 'owner' || role === 'admin';
+    } catch (_) {
+      // If profile fetch fails, default to no AI access for safety
+      canUseAI = false;
+    }
+
     try {
       // 1) Upload to Storage + create Firestore doc
       const { id } = await saveToFirebase(selectedFile, { status: 'uploaded' });
+
+      // If user is not allowed to use AI, stop here
+      if (!canUseAI) {
+        setStatus({ type: "success", message: "Resume uploaded. (AI parsing & analysis require elevated access.)" });
+        e.target.reset();
+        setSelectedFile(null);
+        setSelectedFileText("Click to upload or drag and drop");
+        return;
+      }
 
       // 2) Parse locally on the server via Groq (DOCX/PDF -> structured JSON)
       const form = new FormData();
@@ -47,14 +68,11 @@ export default function FileUpload() {
 
       // 4) Run AI analysis right after parsing
       try {
-        // Optional: show a transient success-before-complete message
-        // setStatus({ type: "success", message: "Parsed. Running AI analysis…" });
         await fetch(`/api/analyze-ai?resumeId=${id}`, { method: 'POST' });
       } catch (err) {
         console.error("Analyze failed: ", err?.message || err);
-        // Non-fatal: we still consider upload+parse a success, but inform the user
         setStatus({ type: "error", message: "Parsed, but AI analysis failed. You can retry from the uploads page." });
-        return; // bail early so we don't show the final success toast
+        return;
       }
 
       setStatus({ type: "success", message: "Resume Uploaded, Parsed, and Analyzed" });

@@ -5,6 +5,8 @@ export const config = { api: { bodyParser: false } };
 
 const MODEL = process.env.NEXT_PUBLIC_AI_MODEL
 
+const MAX_CHARS = 60000; // budget to keep prompt under model context
+
 function parseForm(req) {
   return new Promise((resolve, reject) => {
     const form = new multiparty.Form();
@@ -80,24 +82,40 @@ const SCHEMA = {
 
 function systemPrompt() {
   return [
-    "You are a resume parsing engine.",
-    "Return ONLY valid JSON that matches the provided JSON schema.",
-    "Use only the given resume text. Do not invent facts.",
-    "If a field is unknown, use null (strings) or [] (arrays).",
-    "Normalize whitespace; remove bullet glyphs from details.",
-    "Structure experience as title/company/location/dates/details.",
+    "You are a deterministic resume parsing engine.",
+    "Output MUST be valid JSON only (no markdown, no commentary).",
+    "Use only the given resume text. Do not invent or infer facts not present.",
+    "If a field is unknown: use null for strings and [] for arrays.",
+    "Normalize whitespace; strip bullet glyphs from details.",
+    "Structure experience as title/company/location/start/end/details (details is an array of bullets).",
+    "Cap arrays at a reasonable length (skills <= 64, details per job <= 16).",
   ].join(" ");
 }
 
+const EXEMPLAR = {
+  contact: { name: null, email: null, phone: null, linkedin: null, github: null, website: null, location: null },
+  education: "",
+  skills: [],
+  skillsByCategory: {},
+  experience: [
+    { title: null, company: null, location: null, start: null, end: null, details: [] }
+  ],
+  references: ""
+};
+
 function userPrompt(text) {
   return [
-    "RESUME_TEXT:",
-    text,
+    "TASK: Parse the resume text into the STRICT JSON that matches the JSON_SCHEMA.",
+    "Return JSON ONLY. No extra keys. No markdown.",
     "",
-    "JSON SCHEMA:",
+    "JSON_SCHEMA:",
     JSON.stringify(SCHEMA),
     "",
-    "Respond with JSON ONLY.",
+    "JSON_EXAMPLE:",
+    JSON.stringify(EXEMPLAR),
+    "",
+    "RESUME_TEXT:",
+    text
   ].join("\n");
 }
 
@@ -107,16 +125,28 @@ function safeParse(s, fallback = {}) {
 
 function normalize(out) {
   const o = out || {};
-  const skills = Array.isArray(o.skills) ? [...new Set(o.skills.map(x => String(x).trim()).filter(Boolean))] : [];
-  const skillsByCategory = o.skillsByCategory && typeof o.skillsByCategory === "object" ? o.skillsByCategory : {};
-  const experience = Array.isArray(o.experience) ? o.experience.map(j => ({
-    title: j.title || null,
-    company: j.company || null,
-    location: j.location || null,
-    start: j.start || null,
-    end: j.end || null,
-    details: Array.isArray(j.details) ? j.details.map(d => String(d).replace(/^[-•\s]+/, "").trim()).filter(Boolean) : [],
-  })) : [];
+  let skills = Array.isArray(o.skills) ? o.skills.map(x => String(x).trim()).filter(Boolean) : [];
+  skills = Array.from(new Set(skills)).slice(0, 64);
+
+  const skillsByCategory = (o.skillsByCategory && typeof o.skillsByCategory === "object") ? o.skillsByCategory : {};
+
+  const experience = Array.isArray(o.experience) ? o.experience.map(j => {
+    const details = Array.isArray(j.details) ? j.details
+      .map(d => String(d).replace(/^[-•\s]+/, "").trim())
+      .filter(Boolean)
+      .slice(0, 16)
+      .map(d => d.length > 300 ? d.slice(0, 297) + '…' : d)
+      : [];
+    return {
+      title: j.title || null,
+      company: j.company || null,
+      location: j.location || null,
+      start: j.start || null,
+      end: j.end || null,
+      details,
+    };
+  }) : [];
+
   return {
     contact: o.contact || {},
     education: (o.education || "").trim(),
@@ -136,7 +166,7 @@ export default async function handler(req, res) {
 
     const ext = getExt(fileObj.originalFilename || fileObj.path || "");
     const raw = await readFileToText(fileObj.path, ext);
-    const text = clamp(raw, 60000);
+    const text = clamp(raw, MAX_CHARS);
 
     const client = makeAIClient();
     const completion = await client.chat.completions.create({
