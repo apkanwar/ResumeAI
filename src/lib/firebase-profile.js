@@ -10,6 +10,7 @@ const DEFAULT_PROFILE = {
     niceToHaveKeywords: [],   // [string]
     locations: [],            // [string]
     notes: '',
+    role: 'user',
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
 };
@@ -31,7 +32,6 @@ export async function ensureUserProfile() {
 
     const base = {
         ...DEFAULT_PROFILE,
-        notes: '',
     };
 
     await setDoc(ref, base, { merge: true });
@@ -60,8 +60,7 @@ export async function createUserProfile(profile = {}) {
         niceToHaveKeywords: toArray(profile.niceToHaveKeywords),
         locations: toArray(profile.locations),
         createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-        role: 'user'
+        updatedAt: serverTimestamp()
     };
     await setDoc(ref, payload, { merge: false });
     return true;
