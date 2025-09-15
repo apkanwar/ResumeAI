@@ -8,6 +8,7 @@ export default function FileUpload() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedFileText, setSelectedFileText] = useState("Click to upload or drag and drop");
   const [status, setStatus] = useState(null);
+  const [dragActive, setDragActive] = useState(false);
 
   const handleFile = (e) => {
     const file = e?.target?.files?.[0];
@@ -18,6 +19,26 @@ export default function FileUpload() {
       setSelectedFile(null);
       setSelectedFileText("Click to upload or drag and drop");
     }
+  };
+
+  const allowTypes = new Set([
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ]);
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    const dt = e.dataTransfer;
+    if (!dt || !dt.files || !dt.files.length) return;
+    const file = dt.files[0];
+    if (!allowTypes.has(file.type)) {
+      setStatus({ type: 'error', message: 'Only PDF or DOCX files are allowed.' });
+      return;
+    }
+    setSelectedFile(file);
+    setSelectedFileText(file.name || 'Unnamed file');
   };
 
   async function storeUserResume(e) {
@@ -108,7 +129,15 @@ export default function FileUpload() {
             <h2 className="font-semibold text-2xl font-headings my-4">
               Upload Resume
             </h2>
-            <label htmlFor="resumeDropzone" className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+            <label
+              htmlFor="resumeDropzone"
+              onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setDragActive(true); }}
+              onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setDragActive(true); }}
+              onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setDragActive(false); }}
+              onDrop={handleDrop}
+              className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100
+                ${dragActive ? 'border-plum bg-white' : 'border-gray-300'}`}
+            >
               <div className="flex flex-col items-center justify-center py-2">
                 <svg className="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
