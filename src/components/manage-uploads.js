@@ -1,10 +1,12 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { auth } from '@/lib/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserUploads, deleteResume, deleteSelected as deleteSelectedFn } from '@/lib/firebase-resume';
 import Link from 'next/link';
-import { Delete, Download, PlayCircleFilledOutlined, RemoveRedEye } from '@mui/icons-material';
+import { Delete, Download, Visibility } from '@mui/icons-material';
+import ViewAnalysis from '@/components/analysis/view-analysis';
+import ScoreRing from './ring';
 
 export default function ManageUploads() {
   const [uploads, setUploads] = useState([]);
@@ -13,6 +15,8 @@ export default function ManageUploads() {
   const [uid, setUid] = useState(null);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
+
+  const analysisRef = useRef(null);
 
   // Checking Auth State
   useEffect(() => {
@@ -56,12 +60,8 @@ export default function ManageUploads() {
     else { setSelectedIds(new Set(uploads.map(u => u.id))); }
   };
 
-  const handleAnalyze = async (item) => {
-    // TODO: implement analyze functionality later
-  };
-
-  const viewAnalysis = async (item) => {
-    // TODO: implement analyze functionality later
+  const viewAnalysis = (item) => {
+    analysisRef.current?.open(item);
   };
 
   const handleDelete = async (item) => {
@@ -158,6 +158,7 @@ export default function ManageUploads() {
                         />
                       </th>
                       <th className="px-3 py-2">File</th>
+                      <th className="px-3 py-2">Overall</th>
                       <th className="px-3 py-2">Status</th>
                       <th className="px-3 py-2">Uploaded</th>
                       <th className="px-3 py-2">Actions</th>
@@ -166,6 +167,8 @@ export default function ManageUploads() {
                   <tbody className="divide-y divide-gray-200/60">
                     {uploads.map((u) => {
                       const created = u.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                      const s = (u.analysis && u.analysis.ai && u.analysis.ai.scores) ? u.analysis.ai.scores : null;
+                      const overall = Math.round((s.objective + s.subjective + s.design + s.employer) / 4);
                       return (
                         <tr key={u.id} className="align-middle">
                           <td className="px-3 py-4">
@@ -178,39 +181,37 @@ export default function ManageUploads() {
                             />
                           </td>
                           <td className="px-3 py-2 font-medium">{u.file.name}</td>
+                          <td className="px-3 py-2">
+                            {overall === null ? (
+                              <span className="text-gray-400 text-sm">—</span>
+                            ) : (
+                              <ScoreRing value={overall} size='32' stroke='4' className='!items-start' />
+                            )}
+                          </td>
                           <td className="px-3 py-2 capitalize">{u.status}</td>
                           <td className="px-3 py-2">{created}</td>
                           <td className="px-3 py-2">
                             <div className="flex items-center gap-3">
                               <button
                                 type="button"
-                                className={`rounded-full border border-dm-black px-2 py-0.5 text-xs ${u.status === 'analyzed' ? 'hover:bg-gray-200' : 'opacity-60 cursor-not-allowed'}`}
+                                className={`rounded-full border border-dm-black p-1 text-xs ${u.status === 'analyzed' ? 'hover:bg-gray-200' : 'opacity-60 cursor-not-allowed'}`}
                                 disabled={u.status !== 'analyzed'}
                                 onClick={() => viewAnalysis(u)}
                                 title="View Analysis"
                               >
-                                <RemoveRedEye fontSize='small' />
+                                <Visibility fontSize='small' />
                               </button>
                               <Link
                                 href={u.file.url}
-                                className="rounded-full border border-dm-black px-2 py-0.5 text-xs hover:bg-gray-200"
+                                className="rounded-full border border-dm-black p-1 text-xs hover:bg-gray-200"
                                 target="_blank"
-                                title="Download File"
+                                title="Download Resume"
                               >
                                 <Download fontSize='small' />
                               </Link>
                               <button
-                                type="button"
-                                className="rounded-full border border-dm-black px-2 py-0.5 text-xs opacity-60 cursor-not-allowed"
-                                disabled
-                                onClick={() => handleAnalyze(u)}
-                                title="Analyze with AI"
-                              >
-                                <PlayCircleFilledOutlined fontSize='small' />
-                              </button>
-                              <button
                                 onClick={() => handleDelete(u)}
-                                className="rounded-full border border-red-700 bg-red-50 px-2 py-0.5 text-xs text-red-700 hover:bg-red-100 disabled:opacity-60"
+                                className="rounded-full border border-red-700 bg-red-50 p-1 text-xs text-red-700 hover:bg-red-100 disabled:opacity-60"
                                 disabled={bulkBusy || busyId === u.id}
                                 title="Delete Upload"
                               >
@@ -235,6 +236,7 @@ export default function ManageUploads() {
           )}
         </div>
       </section>
+      <ViewAnalysis ref={analysisRef} />
     </div>
   );
 }

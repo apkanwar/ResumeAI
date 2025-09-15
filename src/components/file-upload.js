@@ -45,7 +45,19 @@ export default function FileUpload() {
       // 3) Save parsed schema via shared helper
       await saveParsedSections(id, parsed);
 
-      setStatus({ type: "success", message: "Resume Uploaded and Parsed" });
+      // 4) Run AI analysis right after parsing
+      try {
+        // Optional: show a transient success-before-complete message
+        // setStatus({ type: "success", message: "Parsed. Running AI analysis…" });
+        await fetch(`/api/analyze-ai?resumeId=${id}`, { method: 'POST' });
+      } catch (err) {
+        console.error("Analyze failed: ", err?.message || err);
+        // Non-fatal: we still consider upload+parse a success, but inform the user
+        setStatus({ type: "error", message: "Parsed, but AI analysis failed. You can retry from the uploads page." });
+        return; // bail early so we don't show the final success toast
+      }
+
+      setStatus({ type: "success", message: "Resume Uploaded, Parsed, and Analyzed" });
       e.target.reset();
       setSelectedFile(null);
       setSelectedFileText("Click to upload or drag and drop");
