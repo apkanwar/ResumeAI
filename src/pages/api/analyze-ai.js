@@ -1,7 +1,7 @@
 import { makeAIClient } from "@/lib/aiClient";
 import { computeObjectiveScore, computeDesignScore } from "@/lib/scoring";
 import { adminDb } from "@/lib/firebaseAdmin";
-import { requireRole } from '@/lib/requireUser';
+import { requireUser } from '@/lib/requireUser';
 
 const SYSTEM_MSG = `
 You are a senior resume reviewer and hiring manager.
@@ -27,8 +27,7 @@ function sliceTextToBudget(text, fixedOverheadTokens, targetPromptBudget = 7000)
 
 export default async function handler(req, res) {
     if (req.method !== "POST") return res.status(405).json({ ok: false, error: "Method Not Allowed" });
-        // Only admin can run AI analysis
-        await requireRole(req, ['admin']);
+    const me = await requireUser(req);
     try {
         const { resumeId } = req.query;
         if (!resumeId) return res.status(400).json({ ok: false, error: "Missing resumeId" });
@@ -38,6 +37,11 @@ export default async function handler(req, res) {
         const rSnap = await rRef.get();
         if (!rSnap.exists) return res.status(404).json({ ok: false, error: 'Resume not found' });
         const resume = rSnap.data();
+        const normalizedRole = String(me.role || '').toLowerCase();
+        const canAccessAny = normalizedRole === 'admin' || normalizedRole === 'owner';
+        if (!canAccessAny && resume.userId !== me.uid) {
+            return res.status(403).json({ ok: false, error: 'Forbidden' });
+        }
         const sections = resume?.analysis?.sections || {};
         const rawText = resume?.analysis?.text || joinSectionsText(sections);
 

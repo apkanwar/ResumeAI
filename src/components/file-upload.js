@@ -1,14 +1,49 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { auth } from "@/lib/firebaseConfig";
 import { saveToFirebase, saveParsedSections } from "@/lib/firebase-resume";
 import { getUserProfile } from "@/lib/firebase-profile";
 import { Close } from "@mui/icons-material";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function FileUpload() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedFileText, setSelectedFileText] = useState("Click to upload or drag and drop");
   const [status, setStatus] = useState(null);
   const [dragActive, setDragActive] = useState(false);
+  const [parseTokens, setParseTokens] = useState(null);
+  const [userRole, setUserRole] = useState(null);
+
+  const syncTokens = useCallback(async () => {
+    try {
+      const prof = await getUserProfile({ ensureParseTokens: true });
+      const role = prof?.role ? String(prof.role).toLowerCase() : 'user';
+      const count = (prof && typeof prof.parseTokens === 'number') ? prof.parseTokens : 0;
+      setUserRole(role);
+      if (role === 'user') {
+        setParseTokens(count);
+        return { role, tokens: count };
+      }
+      setParseTokens(null);
+      return { role, tokens: null };
+    } catch (err) {
+      console.error('Failed to fetch parse tokens', err);
+      setParseTokens(null);
+      setUserRole(null);
+      return null;
+    }
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        syncTokens();
+      } else {
+        setParseTokens(null);
+        setUserRole(null);
+      }
+    });
+    return () => unsubscribe();
+  }, [syncTokens]);
 
   const handleFile = (e) => {
     const file = e?.target?.files?.[0];
@@ -49,30 +84,37 @@ export default function FileUpload() {
       setStatus({ type: "error", message: "Please sign in before attempting to analyze your resume." });
       return;
     }
+    if (!selectedFile) {
+      setStatus({ type: "error", message: "Please select a PDF or DOCX before parsing." });
+      return;
+    }
 
-    // Fetch user profile to determine role-based access
-    let canUseAI = false;
-    try {
-      const prof = await getUserProfile();
-      const role = (prof && prof.role) ? String(prof.role).toLowerCase() : 'user';
-      canUseAI = role === 'owner' || role === 'admin';
-    } catch (_) {
-      // If profile fetch fails, default to no AI access for safety
-      canUseAI = false;
+    // Refresh profile state before parsing
+    const latest = await syncTokens();
+    const role = latest?.role || userRole || 'user';
+    let availableTokens = role === 'user'
+      ? (typeof latest?.tokens === 'number' ? latest.tokens : (typeof parseTokens === 'number' ? parseTokens : null))
+      : null;
+
+    if (role !== 'user' && role !== 'admin') {
+      setStatus({ type: "error", message: "Your account does not have permission to parse resumes." });
+      return;
+    }
+
+    if (role === 'user') {
+      if (typeof availableTokens !== 'number') {
+        setStatus({ type: "error", message: "Unable to verify your parse tokens. Please try again." });
+        return;
+      }
+      if (availableTokens <= 0) {
+        setStatus({ type: "error", message: "You have no parse tokens left. Please visit the store to purchase more." });
+        return;
+      }
     }
 
     try {
       // 1) Upload to Storage + create Firestore doc
       const { id } = await saveToFirebase(selectedFile, { status: 'uploaded' });
-
-      // If user is not allowed to use AI, stop here
-      if (!canUseAI) {
-        setStatus({ type: "success", message: "Resume uploaded. (AI parsing & analysis require elevated access.)" });
-        e.target.reset();
-        setSelectedFile(null);
-        setSelectedFileText("Click to upload or drag and drop");
-        return;
-      }
 
       const idToken = await auth.currentUser.getIdToken();
 
@@ -85,10 +127,23 @@ export default function FileUpload() {
         body: form,
       });
       const data = await resp.json();
+      if (resp.status === 402 && role === 'user') {
+        setParseTokens(0);
+        throw new Error(data?.error || 'You are out of parse tokens.');
+      }
       if (!resp.ok || !data?.ok) {
         throw new Error(data?.error || 'Parse failed');
       }
       const parsed = data.parsed || {};
+      if (role === 'user') {
+        if (typeof data.tokensRemaining === 'number') {
+          setParseTokens(data.tokensRemaining);
+        } else {
+          setParseTokens((prev) => (typeof prev === 'number' ? Math.max(prev - 1, 0) : prev));
+        }
+      } else {
+        setParseTokens(null);
+      }
 
       // 3) Save parsed schema via shared helper
       await saveParsedSections(id, parsed);
@@ -111,13 +166,23 @@ export default function FileUpload() {
         return;
       }
 
-      setStatus({ type: 'success', message: 'Resume Uploaded, Parsed, and Analyzed' });
+      const tokensLeft = typeof data.tokensRemaining === 'number' ? data.tokensRemaining : null;
+      const successMsg = role === 'admin'
+        ? 'Resume Uploaded, Parsed, and Analyzed (admin access).'
+        : tokensLeft !== null
+          ? `Resume Uploaded, Parsed, and Analyzed. Tokens left: ${tokensLeft}.`
+          : 'Resume Uploaded, Parsed, and Analyzed.';
+      setStatus({ type: 'success', message: successMsg });
       e.target.reset();
       setSelectedFile(null);
       setSelectedFileText("Click to upload or drag and drop");
     } catch (error) {
-      console.error("Failed to save/parse: ", error?.message || error);
-      setStatus({ type: "error", message: "Failed to parse. Please try again." });
+      const fallbackMsg = error?.message || "Failed to parse. Please try again.";
+      console.error("Failed to save/parse: ", fallbackMsg);
+      setStatus({ type: "error", message: fallbackMsg });
+      if (auth.currentUser) {
+        await syncTokens();
+      }
     }
   }
 
@@ -162,7 +227,17 @@ export default function FileUpload() {
             </div>
           )}
 
-          <div className="mt-10 mb-4">
+          <div className="mt-10 mb-4 flex flex-col gap-1">
+            {userRole === 'admin' && (
+              <span className="text-sm text-gray-700 font-main">
+                Admin accounts have unlimited parse tokens.
+              </span>
+            )}
+            {userRole === 'user' && typeof parseTokens === 'number' && (
+              <span className="text-sm text-gray-700 font-main">
+                Parse tokens remaining: <span className="font-semibold">{parseTokens}</span>
+              </span>
+            )}
             <button type="submit" className="bg-plum/90 text-white rounded-full py-1 px-6 hover:bg-plum transition-opacity duration-300 text-lg font-medium font-main w-fit">
               Parse and Analyze
             </button>

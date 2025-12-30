@@ -1,6 +1,7 @@
 import multiparty from "multiparty";
 import { makeAIClient } from "@/lib/aiClient";
-import { requireRole } from '@/lib/requireUser';
+import { requireUser } from '@/lib/requireUser';
+import { adminDb, adminFieldValue } from '@/lib/firebaseAdmin';
 
 export const config = { api: { bodyParser: false } };
 
@@ -158,10 +159,48 @@ function normalize(out) {
   };
 }
 
+async function reserveParseToken(uid) {
+  const ref = adminDb.collection('profiles').doc(String(uid));
+  return adminDb.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) {
+      const err = new Error('Profile not found');
+      err.code = 'NO_PROFILE';
+      throw err;
+    }
+    const data = snap.data() || {};
+    let tokens = Number(data.parseTokens);
+    if (!Number.isFinite(tokens)) {
+      tokens = 1;
+    }
+    if (tokens <= 0) {
+      const err = new Error('No parse tokens remaining');
+      err.code = 'NO_TOKENS';
+      throw err;
+    }
+    const next = tokens - 1;
+    tx.update(ref, { parseTokens: next });
+    return { ref, tokensLeft: next };
+  });
+}
+
+async function refundParseToken(ref) {
+  try {
+    await ref.update({ parseTokens: adminFieldValue.increment(1) });
+  } catch (err) {
+    console.error('Failed to refund parse token', err);
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method Not Allowed" });
-  // Only admin can run AI parsing
-  await requireRole(req, ['admin']);
+  const { uid, role } = await requireUser(req);
+  const normalizedRole = String(role || 'user').toLowerCase();
+  if (normalizedRole !== 'user' && normalizedRole !== 'admin') {
+    return res.status(403).json({ ok: false, error: 'Your role is not permitted to parse resumes.' });
+  }
+  const needsToken = normalizedRole === 'user';
+  let tokenReservation = null;
   try {
     const { files } = await parseForm(req);
     const fileObj = Array.isArray(files?.file) ? files.file[0] : files?.file?.[0] || files?.file;
@@ -170,6 +209,17 @@ export default async function handler(req, res) {
     const ext = getExt(fileObj.originalFilename || fileObj.path || "");
     const raw = await readFileToText(fileObj.path, ext);
     const text = clamp(raw, MAX_CHARS);
+
+    if (needsToken) {
+      try {
+        tokenReservation = await reserveParseToken(uid);
+      } catch (err) {
+        if (err?.code === 'NO_TOKENS') {
+          return res.status(402).json({ ok: false, error: 'No parse tokens remaining. Visit the store to purchase more.' });
+        }
+        throw err;
+      }
+    }
 
     const client = makeAIClient();
     const completion = await client.chat.completions.create({
@@ -186,9 +236,16 @@ export default async function handler(req, res) {
     const parsed = normalize(safeParse(content, {}));
 
     // Return the structured result to the client; the client can store it in Firestore.
-    return res.status(200).json({ ok: true, parsed });
+    return res.status(200).json({
+      ok: true,
+      parsed,
+      tokensRemaining: needsToken ? tokenReservation?.tokensLeft ?? null : null
+    });
   } catch (e) {
     console.error("[/api/parse-ai]", e);
+    if (needsToken && tokenReservation?.ref) {
+      await refundParseToken(tokenReservation.ref);
+    }
     return res.status(500).json({ ok: false, error: e?.message || "AI parse failed" });
   }
 }

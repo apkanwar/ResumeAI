@@ -11,6 +11,7 @@ const DEFAULT_PROFILE = {
     locations: [],            // [string]
     notes: '',
     role: 'user',
+    parseTokens: 1,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
 };
@@ -28,7 +29,14 @@ export async function ensureUserProfile() {
     if (!user) throw new Error('Not signed in');
     const ref = doc(db, 'profiles', user.uid);
     const snap = await getDoc(ref);
-    if (snap.exists()) return snap.data();
+    if (snap.exists()) {
+        const data = snap.data();
+        if (typeof data.parseTokens !== 'number' || Number.isNaN(data.parseTokens)) {
+            await updateDoc(ref, { parseTokens: 1, updatedAt: serverTimestamp() });
+            return { ...data, parseTokens: 1 };
+        }
+        return data;
+    }
 
     const base = {
         ...DEFAULT_PROFILE,
@@ -39,12 +47,22 @@ export async function ensureUserProfile() {
 }
 
 /** Get current user's profile (or null if missing) */
-export async function getUserProfile() {
+export async function getUserProfile(options = {}) {
     const user = auth.currentUser;
     if (!user) throw new Error('Not signed in');
+    const { ensureParseTokens = false } = options;
     const ref = doc(db, 'profiles', user.uid);
     const snap = await getDoc(ref);
-    return snap.exists() ? snap.data() : null;
+    if (!snap.exists()) return null;
+    const data = snap.data();
+    if (ensureParseTokens) {
+        const val = data?.parseTokens;
+        if (typeof val !== 'number' || Number.isNaN(val)) {
+            await updateDoc(ref, { parseTokens: 1, updatedAt: serverTimestamp() });
+            return { ...data, parseTokens: 1 };
+        }
+    }
+    return data;
 }
 
 /** Create/replace profile explicitly (rarely needed) */
