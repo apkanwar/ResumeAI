@@ -24,7 +24,7 @@ export async function requireUser(req) {
     const snap = await adminDb.collection('profiles').doc(decoded.uid).get();
     const role = String(snap?.data()?.role || 'user').toLowerCase();
 
-    return { uid: decoded.uid, role };
+    return { uid: decoded.uid, role, email: decoded.email || null };
 }
 
 export async function requireRole(req, allowed = ['admin']) {

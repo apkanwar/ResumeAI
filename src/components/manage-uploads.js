@@ -3,12 +3,11 @@ import { useEffect, useState, useRef } from 'react';
 import { auth } from '@/lib/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserUploads, deleteResume, deleteSelected as deleteSelectedFn } from '@/lib/firebase-resume';
-import Link from 'next/link';
-import { Delete, Download, Visibility } from '@mui/icons-material';
+import { Delete, Visibility } from '@mui/icons-material';
 import ViewAnalysis from '@/components/analysis/view-analysis';
 import ScoreRing from './ring';
 
-export default function ManageUploads() {
+export default function ManageUploads({ panelClassName = "bg-artic-blue" }) {
   const [uploads, setUploads] = useState([]);
   const [status, setStatus] = useState({ state: 'idle', message: '' });
   const [busyId, setBusyId] = useState(null); // track an item being deleted
@@ -111,7 +110,7 @@ export default function ManageUploads() {
 
   return (
     <div className="pb-24">
-      <section className="mx-4 xl:mx-auto max-w-5xl flex flex-col bg-artic-blue rounded-lg p-8 md:px-20 md:py-12 font-main">
+      <section className={`mx-4 xl:mx-auto max-w-5xl flex flex-col ${panelClassName} rounded-lg p-8 md:px-20 md:py-12 font-main`}>
         <div className="flex flex-col w-full">
           <h2 className="font-semibold text-2xl font-headings my-4">Manage Uploads</h2>
 
@@ -204,14 +203,6 @@ export default function ManageUploads() {
                               >
                                 <Visibility fontSize='small' />
                               </button>
-                              <Link
-                                href={u.file.url}
-                                className="rounded-full border border-dm-black p-1 text-xs hover:bg-gray-200"
-                                target="_blank"
-                                title="Download Resume"
-                              >
-                                <Download fontSize='small' />
-                              </Link>
                               <button
                                 onClick={() => handleDelete(u)}
                                 className="rounded-full border border-red-700 bg-red-50 p-1 text-xs text-red-700 hover:bg-red-100 disabled:opacity-60"

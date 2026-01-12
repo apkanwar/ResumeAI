@@ -1,7 +1,5 @@
-import FileUpload from "@/components/file-upload";
-import Navbar from "@/components/navbar";
-import SignInPill from "@/components/signin-pill";
 import Head from "next/head";
+import HomePage from "@/components/home/home-page";
 
 export default function Home() {
   return (
@@ -9,10 +7,7 @@ export default function Home() {
       <Head>
         <title>Resume Analyzer</title>
       </Head>
-
-      <Navbar />
-      <SignInPill />
-      <FileUpload />
+      <HomePage />
     </>
   )
 }
