@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
+import Link from "next/link";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import HomeNav from "@/components/home/home-nav";
 import FileUpload from "@/components/file-upload";
 import ManageUploads from "@/components/manage-uploads";
-import SignInPill from "@/components/signin-pill";
 import StoreContent from "@/components/store-content";
 import { auth } from "@/lib/firebaseConfig";
 import { getUserProfile } from "@/lib/firebase-profile";
@@ -22,6 +22,9 @@ export default function Dashboard() {
   const [currentUser, setCurrentUser] = useState(null);
   const [tokenLabel, setTokenLabel] = useState("--");
   const [authReady, setAuthReady] = useState(false);
+  const userName = currentUser?.displayName || currentUser?.email || "Signed in user";
+  const userEmail = currentUser?.displayName ? currentUser?.email : null;
+  const userInitial = userName?.[0]?.toUpperCase() || "U";
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -76,6 +79,30 @@ export default function Dashboard() {
           <div className="pt-24 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto grid gap-6 md:grid-cols-[240px_1fr]">
               <aside className="h-fit rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
+                <div className="mb-4 flex items-center gap-3 rounded-xl border border-top-orange bg-top-orange/20 p-3">
+                  {currentUser?.photoURL ? (
+                    <img
+                      src={currentUser.photoURL}
+                      alt={userName}
+                      className="h-12 w-12 rounded-full border border-slate-200 object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-lg font-semibold text-slate-700">
+                      {userInitial}
+                    </div>
+                  )}
+                  <div
+                    className="min-w-0 text-sm font-semibold text-slate-900"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {userName}
+                  </div>
+                </div>
                 <nav className="flex flex-col gap-2">
                   {NAV_ITEMS.map((item) => (
                     <button
@@ -104,11 +131,6 @@ export default function Dashboard() {
               <main className="rounded-2xl border border-slate-200 bg-white/70 p-4 md:p-6">
                 {activeSection === "analyze" && (
                   <div>
-                    <SignInPill
-                      renderProfileEditor={false}
-                      compact
-                      surfaceClassName="bg-white/80 border border-slate-200 mb-6"
-                    />
                     <FileUpload panelClassName="bg-white/80 border border-slate-200" />
                   </div>
                 )}
@@ -140,7 +162,18 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="pt-24 px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-6rem)] flex items-center justify-center">
-            <SignInPill surfaceClassName="bg-white/80 border border-slate-200" compact={false} />
+            <div className="max-w-md rounded-2xl border border-slate-200 bg-white/80 p-8 text-center shadow-sm">
+              <h2 className="text-2xl font-semibold text-slate-900">Sign in to access your dashboard</h2>
+              <p className="mt-3 text-sm text-slate-600">
+                Please return to the home page and sign in with Google to continue.
+              </p>
+              <Link
+                href="/"
+                className="mt-6 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#f97316] to-[#fb7185] px-6 py-2 text-sm font-semibold text-white shadow-lg hover:shadow-orange-200/60"
+              >
+                Back to home
+              </Link>
+            </div>
           </div>
         )}
       </div>

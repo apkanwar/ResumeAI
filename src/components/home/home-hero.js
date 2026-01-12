@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Link from "next/link";
 import { Upload, Zap, CheckCircle, ArrowRight } from "lucide-react";
 
 export default function HomeHero() {
@@ -26,7 +27,8 @@ export default function HomeHero() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button
+            <Link
+              href="/dashboard"
               className="group bg-gradient-to-r from-[#f97316] to-[#fb7185] text-white px-8 py-4 rounded-full font-bold text-lg hover:shadow-2xl hover:shadow-orange-200/70 transition-all transform hover:scale-105 flex items-center space-x-2"
               onMouseEnter={() => setIsHovering(true)}
               onMouseLeave={() => setIsHovering(false)}
@@ -34,7 +36,7 @@ export default function HomeHero() {
               <Upload className="w-5 h-5" />
               <span>Analyze Your Resume Free</span>
               <ArrowRight className={`w-5 h-5 transition-transform ${isHovering ? "translate-x-1" : ""}`} />
-            </button>
+            </Link>
           </div>
 
           <div className="mt-12 flex justify-center items-center space-x-8 text-slate-500">

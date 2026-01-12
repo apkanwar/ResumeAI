@@ -3,8 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 import { auth } from '@/lib/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserUploads, deleteResume, deleteSelected as deleteSelectedFn } from '@/lib/firebase-resume';
-import Link from 'next/link';
-import { Delete, Download, Visibility } from '@mui/icons-material';
+import { Delete, Visibility } from '@mui/icons-material';
 import ViewAnalysis from '@/components/analysis/view-analysis';
 import ScoreRing from './ring';
 
@@ -204,14 +203,6 @@ export default function ManageUploads({ panelClassName = "bg-artic-blue" }) {
                               >
                                 <Visibility fontSize='small' />
                               </button>
-                              <Link
-                                href={u.file.url}
-                                className="rounded-full border border-dm-black p-1 text-xs hover:bg-gray-200"
-                                target="_blank"
-                                title="Download Resume"
-                              >
-                                <Download fontSize='small' />
-                              </Link>
                               <button
                                 onClick={() => handleDelete(u)}
                                 className="rounded-full border border-red-700 bg-red-50 p-1 text-xs text-red-700 hover:bg-red-100 disabled:opacity-60"

@@ -238,7 +238,7 @@ export default function FileUpload({ panelClassName = "bg-artic-blue" }) {
                 Parse tokens remaining: <span className="font-semibold">{parseTokens}</span>
               </span>
             )}
-            <button type="submit" className="bg-plum/90 text-white rounded-full py-1 px-6 hover:bg-plum transition-opacity duration-300 text-lg font-medium font-main w-fit">
+            <button type="submit" className="bg-top-orange/90 text-white rounded-full py-1 px-6 hover:bg-top-orange transition-opacity duration-300 text-lg font-medium font-main w-fit">
               Parse and Analyze
             </button>
           </div>

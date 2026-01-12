@@ -196,7 +196,7 @@ export default function ProfileForm({
             <button
               type="submit"
               disabled={saving}
-              className="bg-top-orange border border-top-orange text-white rounded-full py-1 px-6 hover:opacity-90 transition-opacity duration-300 w-fit"
+              className="bg-top-orange/90 hover:bg-top-orange border border-top-orange text-white rounded-full py-1 px-6 hover:opacity-90 transition-opacity duration-300 w-fit"
             >
               {saving ? "Saving..." : submitLabel}
             </button>
