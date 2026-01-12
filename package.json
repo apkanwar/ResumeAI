@@ -27,6 +27,7 @@
     "eslint-config-next": "^14.2.4",
     "firebase": "^10.14.1",
     "firebase-admin": "^13.5.0",
+    "lucide-react": "^0.562.0",
     "mammoth": "^1.10.0",
     "multiparty": "^4.2.3",
     "next": "^15.0.7",

@@ -5,7 +5,7 @@ import { getUserProfile } from "@/lib/firebase-profile";
 import { Close } from "@mui/icons-material";
 import { onAuthStateChanged } from "firebase/auth";
 
-export default function FileUpload() {
+export default function FileUpload({ panelClassName = "bg-artic-blue" }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedFileText, setSelectedFileText] = useState("Click to upload or drag and drop");
   const [status, setStatus] = useState(null);
@@ -188,7 +188,7 @@ export default function FileUpload() {
 
   return (
     <div className="pb-24 text-sm md:text-md">
-      <section className="mx-4 xl:mx-auto max-w-5xl flex flex-col bg-artic-blue rounded-lg p-8 md:px-20 md:py-12">
+      <section className={`mx-4 xl:mx-auto max-w-5xl flex flex-col ${panelClassName} rounded-lg p-8 md:px-20 md:py-12`}>
         <form autoComplete="off" className="font-main" onSubmit={storeUserResume}>
           <div className="flex flex-col w-full">
             <h2 className="font-semibold text-2xl font-headings my-4">

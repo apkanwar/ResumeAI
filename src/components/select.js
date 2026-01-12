@@ -32,7 +32,7 @@ export default function Inputs_Select(props) {
             <Listbox value={selected} onChange={handleChange}>
                 <div className="relative">
 
-                    <Listbox.Button className={`font-main relative cursor-default ring-1 ring-inset ring-gray-300 rounded-lg bg-gray-200 py-[14px] p-3 pr-10 text-left focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm w-48`}>
+                    <Listbox.Button className={`font-main relative cursor-default ring-1 ring-inset ring-gray-300 rounded-lg bg-gray-200 py-[14px] p-3 pr-10 text-left focus:ring-2 focus:ring-inset focus:ring-top-orange sm:text-sm w-48`}>
                         <span className="block truncate">{selected?.name || ''}</span>
                         <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                             <ChevronUpDownIcon

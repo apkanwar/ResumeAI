@@ -3,7 +3,7 @@ import { DefaultSeo } from 'next-seo'
 
 export default function App({ Component, pageProps }) {
   return (
-    <main>
+    <main className="min-h-screen bg-slate-50 text-slate-900">
       <DefaultSeo
         openGraph={{
           type: 'website',

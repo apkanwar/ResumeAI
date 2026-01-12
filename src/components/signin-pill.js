@@ -7,10 +7,17 @@ import { useRouter } from "next/router";
 import { bootstrapProfileAfterSignIn } from "@/lib/firebase-profile";
 import ProfileEditor from "@/components/profile-editor";
 
-export default function SignInPill() {
+export default function SignInPill({
+  profileRef: externalProfileRef,
+  renderProfileEditor = true,
+  compact = false,
+  surfaceClassName = "bg-artic-blue",
+}) {
     const [currentUser, setCurrentUser] = useState(null);
     const router = useRouter();
-    const profileRef = useRef(null);
+    const internalProfileRef = useRef(null);
+    const profileRef = externalProfileRef || internalProfileRef;
+    const spacingClass = compact ? "pt-8" : "pt-24";
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, setCurrentUser);
@@ -36,10 +43,10 @@ export default function SignInPill() {
     };
 
     return (
-        <div className="pt-24 py-8 max-w-5xl mx-auto rounded-full flex justify-center">
+        <div className={`${spacingClass} py-8 max-w-5xl mx-auto rounded-full flex justify-center`}>
             {currentUser ? (
                 <div className="flex flex-row gap-4">
-                    <div className={`flex items-center gap-4 bg-artic-blue rounded-full p-2 font-headings font-medium ${router.pathname === '/' ? 'hidden' : ''}`}>
+                    <div className={`flex items-center gap-4 ${surfaceClassName} rounded-full p-2 font-headings font-medium ${router.pathname === '/' ? 'hidden' : ''}`}>
                         <Link href={'/'} title="Home" className="p-1 pt-0.5 text-white rounded-full hover:bg-gray-300 font-main">
                             <Home color="warning" />
                         </Link>
@@ -48,8 +55,7 @@ export default function SignInPill() {
                         onClick={() => profileRef.current?.open()}
                         role="button"
                         tabIndex={0}
-                        title="Click to edit profile"
-                        className="flex items-center gap-4 bg-artic-blue rounded-full p-2 font-headings font-medium cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-top-orange"
+                        className={`flex items-center gap-4 ${surfaceClassName} rounded-full p-2 font-headings font-medium`}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') profileRef.current?.open(); }}
                     >
                         <img src={currentUser.photoURL} alt="User Avatar" className="rounded-full h-8 w-8" />
@@ -59,7 +65,7 @@ export default function SignInPill() {
                         </button>
                     </div>
 
-                    <div className={`flex items-center gap-4 bg-artic-blue rounded-full p-2 font-headings font-medium ${router.pathname === '/uploads' ? 'hidden' : ''}`}>
+                    <div className={`flex items-center gap-4 ${surfaceClassName} rounded-full p-2 font-headings font-medium ${router.pathname === '/uploads' ? 'hidden' : ''}`}>
                         <Link href={'/uploads'} title="Uploads" className="p-1 pt-0.5 text-white rounded-full hover:bg-gray-300 font-main">
                             <CloudUpload color="warning" />
                         </Link>
@@ -68,13 +74,13 @@ export default function SignInPill() {
             ) : (
                 <div className="flex flex-row gap-4">
                     {router.pathname === '/uploads' && (
-                        <div className="flex items-center gap-4 bg-artic-blue rounded-full p-2 font-headings font-medium">
+                        <div className={`flex items-center gap-4 ${surfaceClassName} rounded-full p-2 font-headings font-medium`}>
                             <Link href={'/'} title="Home" className="p-1 pt-0.5 text-white rounded-full hover:bg-gray-300 font-main">
                                 <Home color="warning" />
                             </Link>
                         </div>
                     )}
-                    <div className="flex flex-row bg-artic-blue rounded-full w-fit gap-2 p-1 font-headings font-medium">
+                    <div className={`flex flex-row ${surfaceClassName} rounded-full w-fit gap-2 p-1 font-headings font-medium`}>
                         <button onClick={handleGoogleSignIn}
                             className="flex flex-row justify-center gap-2 bg-google rounded-full font-main p-[2px]">
                             <span className="bg-white rounded-full flex items-center gap-2 px-4 py-1 hover:bg-gray-100 w-full">
@@ -91,7 +97,7 @@ export default function SignInPill() {
                 </div>
             )}
 
-            <ProfileEditor ref={profileRef} />
+            {renderProfileEditor && <ProfileEditor ref={profileRef} />}
         </div>
     );
 }

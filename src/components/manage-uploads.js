@@ -8,7 +8,7 @@ import { Delete, Download, Visibility } from '@mui/icons-material';
 import ViewAnalysis from '@/components/analysis/view-analysis';
 import ScoreRing from './ring';
 
-export default function ManageUploads() {
+export default function ManageUploads({ panelClassName = "bg-artic-blue" }) {
   const [uploads, setUploads] = useState([]);
   const [status, setStatus] = useState({ state: 'idle', message: '' });
   const [busyId, setBusyId] = useState(null); // track an item being deleted
@@ -111,7 +111,7 @@ export default function ManageUploads() {
 
   return (
     <div className="pb-24">
-      <section className="mx-4 xl:mx-auto max-w-5xl flex flex-col bg-artic-blue rounded-lg p-8 md:px-20 md:py-12 font-main">
+      <section className={`mx-4 xl:mx-auto max-w-5xl flex flex-col ${panelClassName} rounded-lg p-8 md:px-20 md:py-12 font-main`}>
         <div className="flex flex-col w-full">
           <h2 className="font-semibold text-2xl font-headings my-4">Manage Uploads</h2>
 
