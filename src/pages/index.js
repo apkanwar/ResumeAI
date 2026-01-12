@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>ResumeAnalyzer</title>
+        <title>Resume Analyzer</title>
       </Head>
       <HomePage />
     </>

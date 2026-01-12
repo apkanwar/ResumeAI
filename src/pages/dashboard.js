@@ -69,7 +69,7 @@ export default function Dashboard() {
   return (
     <>
       <Head>
-        <title>ResumeAnalyzer - Dashboard</title>
+        <title>Resume Analyzer - Dashboard</title>
       </Head>
 
       <div className="min-h-screen bg-gradient-to-br from-[#fff7ed] via-[#fdf2f8] to-[#e0f2fe] text-slate-900">
