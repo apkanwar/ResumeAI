@@ -7,12 +7,12 @@ export default function FAQ() {
     return (
         <>
             <NextSeo
-                title="Resume Analyzer | FAQ"
+                title="Resume Analyzer - FAQ"
                 description="Answers about how Resume Analyzer parses, scores, and helps improve your resume."
-                canonical="https://www.resumeanalyzer.ai/faq"
+                canonical="https://www.resumeanalyzer.me/faq"
                 openGraph={{
-                    url: "https://www.resumeanalyzer.ai/faq",
-                    title: "Resume Analyzer | FAQ",
+                    url: "https://www.resumeanalyzer.me/faq",
+                    title: "Resume Analyzer - FAQ",
                     description: "Answers about how Resume Analyzer parses, scores, and helps improve your resume.",
                     images: [
                         {

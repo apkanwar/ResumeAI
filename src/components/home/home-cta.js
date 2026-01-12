@@ -8,7 +8,7 @@ export default function HomeCTA() {
           Ready to Stand Out?
         </h2>
         <p className="text-xl text-slate-600 mb-8">
-          Join thousands of successful job seekers who've optimized their resumes with AI
+          Join thousands of successful job seekers who have already begun optimizing their resumes with AI
         </p>
         <Link
           href="/dashboard"

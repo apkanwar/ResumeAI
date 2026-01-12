@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
 
 export default function HomeNav({ variant = "home", tokenLabel = "--" }) {
   const isDashboard = variant === "dashboard";
@@ -10,9 +9,9 @@ export default function HomeNav({ variant = "home", tokenLabel = "--" }) {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center space-x-2">
-              <Sparkles className="w-8 h-8 text-rose-500" />
+              <img src="/logo.png" alt="ResumeAI logo" className="h-8 w-8" />
               <span className="text-2xl font-bold bg-gradient-to-r from-[#f97316] to-[#fb7185] bg-clip-text text-transparent">
-                ResumeAI
+                Resume Analzyer
               </span>
             </Link>
           </div>
