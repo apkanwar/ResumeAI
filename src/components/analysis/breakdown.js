@@ -60,8 +60,8 @@ function improvementTips(breakdown = {}) {
     add(
         tips.design,
         des.bulletScore,
-        "Use more bullet points; keep 1 idea per bullet for easier skim",
-        "Increase bullet usage in body sections to improve scannability"
+        "Aim for at least 3 bullets per role; keep 1–2 ideas per bullet for easier skim",
+        "Add 1–2 more bullets to roles that are under-detailed; keep bullets single-focus"
     );
     // ALL-CAPS
     add(
