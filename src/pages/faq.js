@@ -1,6 +1,6 @@
 import FAQContent from "@/components/faqContent"
-import HomeNav from "@/components/home/home-nav"
-import HomeFooter from "@/components/home/home-footer"
+import HomeNav from "@/components/navbar"
+import HomeFooter from "@/components/footer"
 import { NextSeo } from "next-seo"
 
 export default function FAQ() {

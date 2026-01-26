@@ -2,7 +2,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Upload, Zap, CheckCircle, ArrowRight } from "lucide-react";
 
-export default function HomeHero() {
+export default function Hero() {
   const [isHovering, setIsHovering] = useState(false);
 
   return (

@@ -1,20 +1,24 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
+import { ChartBar, CircleQuestionMark, LogOut, ScanSearch, ShoppingBag, UserRound } from "lucide-react";
 import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
-import HomeNav from "@/components/home/home-nav";
-import FileUpload from "@/components/file-upload";
-import ManageUploads from "@/components/manage-uploads";
-import StoreContent from "@/components/store-content";
+import HomeNav from "@/components/navbar";
 import { auth } from "@/lib/firebaseConfig";
 import { bootstrapProfileAfterSignIn, getUserProfile } from "@/lib/firebase-profile";
-import ProfileForm from "@/components/profile-form";
+import DashboardNavItem from "@/components/dashboard/nav-item";
+import DashboardAnalyzeSection from "@/components/dashboard/analyze-section";
+import DashboardResultsSection from "@/components/dashboard/results-section";
+import DashboardProfileSection from "@/components/dashboard/profile-section";
+import DashboardStoreSection from "@/components/dashboard/store-section";
+import DashboardHelpSection from "@/components/dashboard/help-section";
 
 const NAV_ITEMS = [
-  { id: "analyze", label: "Analyze" },
-  { id: "results", label: "Results" },
-  { id: "profile", label: "Job Profile" },
-  { id: "store", label: "Store" },
+  { id: "analyze", label: "Analyze", icon: ScanSearch },
+  { id: "results", label: "Results", icon: ChartBar },
+  { id: "profile", label: "Job Profile", icon: UserRound },
+  { id: "store", label: "Store", icon: ShoppingBag },
+  { id: "help", label: "Help", icon: CircleQuestionMark },
 ];
 
 export default function Dashboard() {
@@ -25,7 +29,6 @@ export default function Dashboard() {
   const [signInBusy, setSignInBusy] = useState(false);
   const [signInError, setSignInError] = useState("");
   const userName = currentUser?.displayName || currentUser?.email || "Signed in user";
-  const userEmail = currentUser?.displayName ? currentUser?.email : null;
   const userInitial = userName?.[0]?.toUpperCase() || "U";
 
   useEffect(() => {
@@ -121,57 +124,42 @@ export default function Dashboard() {
                 </div>
                 <nav className="flex flex-col gap-2">
                   {NAV_ITEMS.map((item) => (
-                    <button
+                    <DashboardNavItem
                       key={item.id}
-                      type="button"
+                      label={item.label}
+                      active={activeSection === item.id}
                       onClick={() => setActiveSection(item.id)}
-                      className={`text-left rounded-xl px-4 py-2 font-semibold transition-colors ${
-                        activeSection === item.id
-                          ? "bg-top-orange/20 text-slate-900"
-                          : "text-slate-600 hover:text-top-orange hover:bg-top-orange/10"
-                      }`}
-                    >
-                      {item.label}
-                    </button>
+                      Icon={item.icon}
+                    />
                   ))}
-                  <button
-                    type="button"
+                  <DashboardNavItem
+                    variant="danger"
+                    className="mt-4"
+                    label="Logout"
                     onClick={handleLogout}
-                    className="mt-4 text-left rounded-xl px-4 py-2 font-semibold text-slate-600 hover:text-white hover:bg-red-500 transition-colors"
-                  >
-                    Logout
-                  </button>
+                    Icon={LogOut}
+                  />
                 </nav>
               </aside>
 
               <main className="rounded-2xl border border-slate-200 bg-white/70 p-4 md:p-6">
                 {activeSection === "analyze" && (
-                  <div>
-                    <FileUpload panelClassName="bg-white/80 border border-slate-200" />
-                  </div>
+                  <DashboardAnalyzeSection
+                    panelClassName="bg-white/80 border border-slate-200"
+                    onAnalysisComplete={() => setActiveSection("results")}
+                  />
                 )}
                 {activeSection === "results" && (
-                  <div>
-                    <ManageUploads panelClassName="bg-white/80 border border-slate-200" />
-                  </div>
+                  <DashboardResultsSection panelClassName="bg-white/80 border border-slate-200" />
                 )}
                 {activeSection === "profile" && (
-                  <div className="mx-4 xl:mx-auto max-w-5xl">
-                    <section className="rounded-2xl border border-slate-200 bg-white/80 p-8 font-main">
-                      <h2 className="text-2xl font-headings font-semibold">Job Profile</h2>
-                      <p className="mt-3 text-slate-700">
-                        Update your target role, seniority, keywords, and preferences to personalize your analysis.
-                      </p>
-                      <div className="mt-6">
-                        <ProfileForm showTitle={false} showCancel={false} submitLabel="Save Profile" />
-                      </div>
-                    </section>
-                  </div>
+                  <DashboardProfileSection />
                 )}
                 {activeSection === "store" && (
-                  <div>
-                    <StoreContent panelClassName="bg-white/80 border border-slate-200" />
-                  </div>
+                  <DashboardStoreSection panelClassName="bg-white/80 border border-slate-200" />
+                )}
+                {activeSection === "help" && (
+                  <DashboardHelpSection onNavigate={setActiveSection} />
                 )}
               </main>
             </div>

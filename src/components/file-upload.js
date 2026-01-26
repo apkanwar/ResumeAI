@@ -4,14 +4,17 @@ import { saveToFirebase, saveParsedSections } from "@/lib/firebase-resume";
 import { getUserProfile } from "@/lib/firebase-profile";
 import { Close } from "@mui/icons-material";
 import { onAuthStateChanged } from "firebase/auth";
+import LoadingOverlay from "@/components/loading-overlay";
 
-export default function FileUpload({ panelClassName = "bg-artic-blue" }) {
+export default function FileUpload({ panelClassName = "bg-artic-blue", onAnalysisComplete }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedFileText, setSelectedFileText] = useState("Click to upload or drag and drop");
   const [status, setStatus] = useState(null);
   const [dragActive, setDragActive] = useState(false);
   const [parseTokens, setParseTokens] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [loadingStage, setLoadingStage] = useState(null);
+  const isBusy = Boolean(loadingStage);
 
   const syncTokens = useCallback(async () => {
     try {
@@ -78,6 +81,9 @@ export default function FileUpload({ panelClassName = "bg-artic-blue" }) {
 
   async function storeUserResume(e) {
     e.preventDefault();
+    const formEl = e.currentTarget;
+    let resumeIdForNavigation = null;
+    let shouldNavigateToResults = false;
 
     const user = auth.currentUser;
     if (!user) {
@@ -89,36 +95,42 @@ export default function FileUpload({ panelClassName = "bg-artic-blue" }) {
       return;
     }
 
-    // Refresh profile state before parsing
-    const latest = await syncTokens();
-    const role = latest?.role || userRole || 'user';
-    let availableTokens = role === 'user'
-      ? (typeof latest?.tokens === 'number' ? latest.tokens : (typeof parseTokens === 'number' ? parseTokens : null))
-      : null;
-
-    if (role !== 'user' && role !== 'admin') {
-      setStatus({ type: "error", message: "Your account does not have permission to parse resumes." });
-      return;
-    }
-
-    if (role === 'user') {
-      if (typeof availableTokens !== 'number') {
-        setStatus({ type: "error", message: "Unable to verify your parse tokens. Please try again." });
-        return;
-      }
-      if (availableTokens <= 0) {
-        setStatus({ type: "error", message: "You have no parse tokens left. Please visit the store to purchase more." });
-        return;
-      }
-    }
-
     try {
+      setStatus(null);
+      setLoadingStage("Getting Things Ready...");
+
+      // Refresh profile state before parsing
+      const latest = await syncTokens();
+      const role = latest?.role || userRole || 'user';
+      let availableTokens = role === 'user'
+        ? (typeof latest?.tokens === 'number' ? latest.tokens : (typeof parseTokens === 'number' ? parseTokens : null))
+        : null;
+
+      if (role !== 'user' && role !== 'admin') {
+        setStatus({ type: "error", message: "Your account does not have permission to parse resumes." });
+        return;
+      }
+
+      if (role === 'user') {
+        if (typeof availableTokens !== 'number') {
+          setStatus({ type: "error", message: "Unable to verify your parse tokens. Please try again." });
+          return;
+        }
+        if (availableTokens <= 0) {
+          setStatus({ type: "error", message: "You have no parse tokens left. Please visit the store to purchase more." });
+          return;
+        }
+      }
+
       // 1) Upload to Storage + create Firestore doc
+      setLoadingStage("Uploading Resume...");
       const { id } = await saveToFirebase(selectedFile, { status: 'uploaded' });
+      resumeIdForNavigation = id;
 
       const idToken = await auth.currentUser.getIdToken();
 
       // 2) Parse locally on the server via Groq (DOCX/PDF -> structured JSON)
+      setLoadingStage("Parsing Resume...");
       const form = new FormData();
       form.append('file', selectedFile);
       const resp = await fetch('/api/parse-ai', {
@@ -149,23 +161,19 @@ export default function FileUpload({ panelClassName = "bg-artic-blue" }) {
       await saveParsedSections(id, parsed);
 
       // 4) Run AI analysis right after parsing
-      try {
-        const analyzeResp = await fetch(`/api/analyze-ai?resumeId=${id}`, {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${idToken}` },
-        });
-        let analyzeJson = null;
-        try { analyzeJson = await analyzeResp.json(); } catch (_) { }
-        if (!analyzeResp.ok || (analyzeJson && analyzeJson.ok === false)) {
-          const msg = (analyzeJson && (analyzeJson.error || analyzeJson.message)) || `Analyze failed (${analyzeResp.status})`;
-          throw new Error(msg);
-        }
-      } catch (err) {
-        console.error('[analyze-ai] ', err?.message || err);
-        setStatus({ type: 'error', message: `Parsed, but analysis failed: ${err?.message || 'Unknown error'}` });
-        return;
+      setLoadingStage("Analyzing Resume...");
+      const analyzeResp = await fetch(`/api/analyze-ai?resumeId=${id}`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+      let analyzeJson = null;
+      try { analyzeJson = await analyzeResp.json(); } catch (_) { }
+      if (!analyzeResp.ok || (analyzeJson && analyzeJson.ok === false)) {
+        const msg = (analyzeJson && (analyzeJson.error || analyzeJson.message)) || `Analyze failed (${analyzeResp.status})`;
+        throw new Error(`Parsed, but analysis failed: ${msg}`);
       }
 
+      setLoadingStage("Generating Report...");
       const tokensLeft = typeof data.tokensRemaining === 'number' ? data.tokensRemaining : null;
       const successMsg = role === 'admin'
         ? 'Resume Uploaded, Parsed, and Analyzed (admin access).'
@@ -173,7 +181,8 @@ export default function FileUpload({ panelClassName = "bg-artic-blue" }) {
           ? `Resume Uploaded, Parsed, and Analyzed. Tokens left: ${tokensLeft}.`
           : 'Resume Uploaded, Parsed, and Analyzed.';
       setStatus({ type: 'success', message: successMsg });
-      e.target.reset();
+      shouldNavigateToResults = true;
+      formEl?.reset?.();
       setSelectedFile(null);
       setSelectedFileText("Click to upload or drag and drop");
     } catch (error) {
@@ -182,6 +191,11 @@ export default function FileUpload({ panelClassName = "bg-artic-blue" }) {
       setStatus({ type: "error", message: fallbackMsg });
       if (auth.currentUser) {
         await syncTokens();
+      }
+    } finally {
+      setLoadingStage(null);
+      if (shouldNavigateToResults && resumeIdForNavigation && typeof onAnalysisComplete === "function") {
+        setTimeout(() => onAnalysisComplete(resumeIdForNavigation), 0);
       }
     }
   }
@@ -210,7 +224,15 @@ export default function FileUpload({ panelClassName = "bg-artic-blue" }) {
                 <p className="mb-2 text-sm text-gray-500">{selectedFileText}</p>
                 <p className="text-xs text-gray-500 font-semibold">PDF or DOCX</p>
               </div>
-              <input required id="resumeDropzone" type="file" className="hidden" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={handleFile} />
+              <input
+                required
+                id="resumeDropzone"
+                type="file"
+                className="hidden"
+                accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                onChange={handleFile}
+                disabled={isBusy}
+              />
             </label>
           </div>
 
@@ -238,12 +260,17 @@ export default function FileUpload({ panelClassName = "bg-artic-blue" }) {
                 Parse tokens remaining: <span className="font-semibold">{parseTokens}</span>
               </span>
             )}
-            <button type="submit" className="bg-top-orange/90 text-white rounded-full py-1 px-6 hover:bg-top-orange transition-opacity duration-300 text-lg font-medium font-main w-fit">
+            <button
+              type="submit"
+              disabled={isBusy}
+              className="bg-top-orange/90 text-white rounded-full py-1 px-6 hover:bg-top-orange transition-opacity duration-300 text-lg font-medium font-main w-fit disabled:cursor-not-allowed disabled:opacity-70"
+            >
               Parse and Analyze
             </button>
           </div>
         </form>
       </section>
+      <LoadingOverlay open={isBusy} message={loadingStage} />
     </div >
   )
 }

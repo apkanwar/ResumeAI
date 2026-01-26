@@ -1,6 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 
-export default function HomeNav({ variant = "home", tokenLabel = "--" }) {
+export default function Navbar({ variant = "home", tokenLabel = "--" }) {
   const isDashboard = variant === "dashboard";
 
   return (
@@ -9,9 +10,9 @@ export default function HomeNav({ variant = "home", tokenLabel = "--" }) {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center space-x-2">
-              <img src="/logo.png" alt="ResumeAI logo" className="h-8 w-8" />
+              <Image src="/logo.png" alt="ResumeAnalyzer logo" width={32} height={32} />
               <span className="text-2xl font-bold bg-gradient-to-r from-[#f97316] to-[#fb7185] bg-clip-text text-transparent">
-                Resume Analzyer
+                Resume Analyzer
               </span>
             </Link>
           </div>

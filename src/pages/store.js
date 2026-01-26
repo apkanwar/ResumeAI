@@ -1,5 +1,5 @@
 import Head from "next/head";
-import HomeNav from "@/components/home/home-nav";
+import HomeNav from "@/components/navbar";
 import StoreContent from "@/components/store-content";
 
 export default function Store() {

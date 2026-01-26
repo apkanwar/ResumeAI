@@ -1,6 +1,6 @@
 import { Target, Zap, TrendingUp } from "lucide-react";
 
-const FEATURES = [
+const DEFAULT_FEATURES = [
   {
     icon: <Target className="w-12 h-12 text-[#f97316]" />,
     title: "ATS Optimization",
@@ -18,17 +18,26 @@ const FEATURES = [
   },
 ];
 
-export default function HomeFeatures() {
+export default function Features({
+  features = DEFAULT_FEATURES,
+  title = "Powerful Features to",
+  highlight = " Boost Your Career",
+  sectionId = "features",
+}) {
   return (
-    <section id="features" className="py-20 px-4 sm:px-6 lg:px-8">
+    <section id={sectionId} className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-4xl md:text-5xl font-bold text-center text-slate-900 mb-16">
-          Powerful Features to
-          <span className="bg-gradient-to-r from-[#f97316] to-[#fb7185] bg-clip-text text-transparent"> Boost Your Career</span>
+          {title}
+          {highlight ? (
+            <span className="bg-gradient-to-r from-[#f97316] to-[#fb7185] bg-clip-text text-transparent">
+              {highlight}
+            </span>
+          ) : null}
         </h2>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {FEATURES.map((feature, idx) => (
+          {features.map((feature, idx) => (
             <div
               key={idx}
               className="group bg-white/80 backdrop-blur-sm border border-slate-200 rounded-2xl p-8 hover:border-rose-200 hover:bg-white transition-all transform hover:scale-105 hover:shadow-xl hover:shadow-rose-200/60"
