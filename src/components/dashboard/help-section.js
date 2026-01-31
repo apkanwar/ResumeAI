@@ -12,7 +12,7 @@ const helpSliderData = [
           title: 'Helping with Job Profile',
           description:
             'Create your target job profile (title, level, skills, and preferences) so every analysis is aligned to the role you want.',
-          image: '/help/copilot.webp',
+          image: '/help/profile.png',
         }
       },
       {
@@ -20,7 +20,7 @@ const helpSliderData = [
           title: 'Analyze',
           description:
             'Upload your resume to get a clear breakdown of strengths, missing keywords, and improvement areas.',
-          image: '/help/copilot.webp',
+          image: '/help/analyze.png',
         }
       },
       {
@@ -28,7 +28,7 @@ const helpSliderData = [
           title: 'Results',
           description:
             'Review prioritized recommendations and apply edits to boost match score, clarity, and impact before you apply.',
-          image: '/help/copilot.webp',
+          image: '/help/report.png',
         }
       }
     ]

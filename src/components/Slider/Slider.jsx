@@ -131,7 +131,7 @@ const SeeTheResultsSlider = ({ data = [], settings, showItemTitlesList = false }
             <p className='text-2xl font-headings font-semibold'>{activeTabData.title}</p>
             <p className='text-lg'>{activeTabData.description}</p>
             {showItemTitlesList && itemTitleEntries.length > 0 && (
-              <ol className='mt-2 space-y-2'>
+              <ol className='mt-2 space-y-4'>
                 {itemTitleEntries.map(({ index, title }) => {
                   const active = index === activeCardIndex
                   const base =

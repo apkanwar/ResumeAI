@@ -86,7 +86,7 @@ export default function ManageUploads({ panelClassName = "bg-artic-blue" }) {
     setStatus({ state: 'loading', message: 'Deleting…' });
 
     try {
-      await deleteResume(item.id, item.file.path);
+      await deleteResume(item.id);
       const list = await getUserUploads();
       setUploads(list);
       setStatus({ state: 'idle', message: '' });
@@ -268,7 +268,7 @@ export default function ManageUploads({ panelClassName = "bg-artic-blue" }) {
         onConfirm={confirmMode === "bulk" ? confirmBulkDelete : confirmDelete}
         title={
           confirmMode === "bulk"
-            ? `Are you sure you want to delete ${selectedIds.size} analysis${selectedIds.size === 1 ? "" : "es"}?`
+            ? `Are you sure you want to delete the selected analyses?`
             : "Are you sure you want to delete this analysis?"
         }
         description="This action cannot be undone."

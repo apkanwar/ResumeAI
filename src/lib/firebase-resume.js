@@ -1,10 +1,10 @@
 import { auth, db } from '@/lib/firebaseConfig';
 import {
-    getStorage, ref, deleteObject, uploadBytes, getDownloadURL
+    getStorage, ref, uploadBytes, getDownloadURL
 } from 'firebase/storage';
 import {
     collection, query, where, orderBy, getDocs,
-    doc, deleteDoc, addDoc, serverTimestamp, updateDoc
+    doc, getDoc, setDoc, deleteDoc, addDoc, serverTimestamp, updateDoc
 } from 'firebase/firestore';
 
 
@@ -53,27 +53,28 @@ export async function getUserUploads() {
 }
 
 // Delete resume and document
-export async function deleteResume(id, path) {
+export async function deleteResume(id) {
     const user = auth.currentUser;
     if (!user) throw new Error('Not signed in');
     if (!id) throw new Error('Missing id');
 
-    await deleteDoc(doc(db, 'resumes', id));
+    const resumeRef = doc(db, 'resumes', id);
+    const snap = await getDoc(resumeRef);
+    if (!snap.exists()) return;
 
-    if (path) {
-        try {
-            const storage = getStorage();
-            await deleteObject(ref(storage, path));
-        } catch (_) {
-        }
-    }
+    const archivedRef = doc(db, 'archived', id);
+    await setDoc(archivedRef, {
+        ...snap.data(),
+        archivedAt: serverTimestamp()
+    });
+    await deleteDoc(resumeRef);
 }
 
 // Delete selected resume and document
 export async function deleteSelected(items = []) {
     for (const it of items) {
         if (!it || !it.id) continue;
-        await deleteResume(it.id, it.path);
+        await deleteResume(it.id);
     }
 }
 
