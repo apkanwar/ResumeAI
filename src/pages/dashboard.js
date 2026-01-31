@@ -7,11 +7,12 @@ import HomeNav from "@/components/navbar";
 import { auth } from "@/lib/firebaseConfig";
 import { bootstrapProfileAfterSignIn, getUserProfile } from "@/lib/firebase-profile";
 import DashboardNavItem from "@/components/dashboard/nav-item";
-import DashboardAnalyzeSection from "@/components/dashboard/analyze-section";
-import DashboardResultsSection from "@/components/dashboard/results-section";
 import DashboardProfileSection from "@/components/dashboard/profile-section";
-import DashboardStoreSection from "@/components/dashboard/store-section";
 import DashboardHelpSection from "@/components/dashboard/help-section";
+import LogoutConfirmationModal from "@/components/dashboard/logout-confirmation-modal";
+import FileUpload from "@/components/dashboard/file-upload";
+import ManageUploads from "@/components/dashboard/manage-uploads";
+import StoreContent from "@/components/dashboard/store-content";
 
 const NAV_ITEMS = [
   { id: "analyze", label: "Analyze", icon: ScanSearch },
@@ -28,6 +29,7 @@ export default function Dashboard() {
   const [authReady, setAuthReady] = useState(false);
   const [signInBusy, setSignInBusy] = useState(false);
   const [signInError, setSignInError] = useState("");
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const userName = currentUser?.displayName || currentUser?.email || "Signed in user";
   const userInitial = userName?.[0]?.toUpperCase() || "U";
 
@@ -61,12 +63,17 @@ export default function Dashboard() {
   }, []);
 
   const handleLogout = async () => {
+    setLogoutConfirmOpen(false);
     try {
       await signOut(auth);
       setActiveSection("analyze");
     } catch (err) {
       console.error("Sign out error", err);
     }
+  };
+
+  const handleLogoutClick = () => {
+    setLogoutConfirmOpen(true);
   };
 
   const handleGoogleSignIn = async () => {
@@ -95,75 +102,82 @@ export default function Dashboard() {
         <HomeNav variant="dashboard" tokenLabel={tokenLabel} />
 
         {showDashboard ? (
-          <div className="pt-24 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto grid gap-6 md:grid-cols-[240px_1fr]">
-              <aside className="h-fit rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
-                <div className="mb-4 flex items-center gap-3 rounded-xl border border-top-orange bg-top-orange/20 p-3">
-                  {currentUser?.photoURL ? (
-                    <img
-                      src={currentUser.photoURL}
-                      alt={userName}
-                      className="h-12 w-12 rounded-full border border-slate-200 object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-lg font-semibold text-slate-700">
-                      {userInitial}
+          <>
+            <div className="pt-24 px-4 sm:px-6 lg:px-8">
+              <div className="max-w-7xl mx-auto grid gap-6 md:grid-cols-[240px_1fr]">
+                <aside className="h-fit rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
+                  <div className="mb-4 flex items-center gap-3 rounded-xl border border-top-orange bg-top-orange/20 p-3">
+                    {currentUser?.photoURL ? (
+                      <img
+                        src={currentUser.photoURL}
+                        alt={userName}
+                        className="h-12 w-12 rounded-full border border-slate-200 object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-lg font-semibold text-slate-700">
+                        {userInitial}
+                      </div>
+                    )}
+                    <div
+                      className="min-w-0 text-sm font-semibold text-slate-900"
+                      style={{
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {userName}
                     </div>
-                  )}
-                  <div
-                    className="min-w-0 text-sm font-semibold text-slate-900"
-                    style={{
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {userName}
                   </div>
-                </div>
-                <nav className="flex flex-col gap-2">
-                  {NAV_ITEMS.map((item) => (
+                  <nav className="flex flex-col gap-2">
+                    {NAV_ITEMS.map((item) => (
+                      <DashboardNavItem
+                        key={item.id}
+                        label={item.label}
+                        active={activeSection === item.id}
+                        onClick={() => setActiveSection(item.id)}
+                        Icon={item.icon}
+                      />
+                    ))}
                     <DashboardNavItem
-                      key={item.id}
-                      label={item.label}
-                      active={activeSection === item.id}
-                      onClick={() => setActiveSection(item.id)}
-                      Icon={item.icon}
+                      variant="danger"
+                      className="mt-4"
+                      label="Logout"
+                      onClick={handleLogoutClick}
+                      Icon={LogOut}
                     />
-                  ))}
-                  <DashboardNavItem
-                    variant="danger"
-                    className="mt-4"
-                    label="Logout"
-                    onClick={handleLogout}
-                    Icon={LogOut}
-                  />
-                </nav>
-              </aside>
+                  </nav>
+                </aside>
 
-              <main className="rounded-2xl border border-slate-200 bg-white/70 p-4 md:p-6">
-                {activeSection === "analyze" && (
-                  <DashboardAnalyzeSection
-                    panelClassName="bg-white/80 border border-slate-200"
-                    onAnalysisComplete={() => setActiveSection("results")}
-                  />
-                )}
-                {activeSection === "results" && (
-                  <DashboardResultsSection panelClassName="bg-white/80 border border-slate-200" />
-                )}
-                {activeSection === "profile" && (
-                  <DashboardProfileSection />
-                )}
-                {activeSection === "store" && (
-                  <DashboardStoreSection panelClassName="bg-white/80 border border-slate-200" />
-                )}
-                {activeSection === "help" && (
-                  <DashboardHelpSection onNavigate={setActiveSection} />
-                )}
-              </main>
+                <main className="rounded-2xl border border-slate-200 bg-white/70 p-4 md:p-6 mb-8">
+                  {activeSection === "analyze" && (
+                    <FileUpload
+                      panelClassName="bg-white/80 border border-slate-200"
+                      onAnalysisComplete={() => setActiveSection("results")}
+                    />
+                  )}
+                  {activeSection === "results" && (
+                    <ManageUploads panelClassName="bg-white/80 border border-slate-200" />
+                  )}
+                  {activeSection === "profile" && (
+                    <DashboardProfileSection />
+                  )}
+                  {activeSection === "store" && (
+                    <StoreContent panelClassName="bg-white/80 border border-slate-200" />
+                  )}
+                  {activeSection === "help" && (
+                    <DashboardHelpSection onNavigate={setActiveSection} />
+                  )}
+                </main>
+              </div>
             </div>
-          </div>
+            <LogoutConfirmationModal
+              open={logoutConfirmOpen}
+              onCancel={() => setLogoutConfirmOpen(false)}
+              onConfirm={handleLogout}
+            />
+          </>
         ) : (
           <div className="pt-24 px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-6rem)] flex items-center justify-center">
             <div className="max-w-md rounded-2xl border border-slate-200 bg-white/80 p-8 text-center shadow-sm">

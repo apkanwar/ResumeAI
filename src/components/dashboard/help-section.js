@@ -1,34 +1,33 @@
 import Slider from '@/components/Slider/Slider'
-import { useWindowSize } from 'react-use'
 
 const helpSliderData = [
   {
-    title: 'How to Get Started',
+    title: 'How to Best Use Resume Analyzer',
     description:
-      'Smooth wrinkles, restore volume, and rejuvenate your skin with our expert injectable treatments.',
+      'Follow these three steps to tailor your resume to a role, understand the gaps, and ship a stronger application.',
     showCta: false,
     items: [
       {
         frontCard: {
-          title: 'Botox® Wrinkle Relaxer Treatment',
+          title: 'Helping with Job Profile',
           description:
-            'Reduces wrinkles and fine lines for a smoother, younger-looking appearance.',
+            'Create your target job profile (title, level, skills, and preferences) so every analysis is aligned to the role you want.',
           image: '/help/copilot.webp',
         }
       },
       {
         frontCard: {
-          title: 'Lip Fillers and Augmentation',
+          title: 'Analyze',
           description:
-            'Achieve beautifully defined, balanced lips with personalized care.',
+            'Upload your resume to get a clear breakdown of strengths, missing keywords, and improvement areas.',
           image: '/help/copilot.webp',
         }
       },
       {
         frontCard: {
-          title: 'Dermal Fillers',
+          title: 'Results',
           description:
-            'Enhances facial contours and adds natural volume to cheeks, lips, and more.',
+            'Review prioritized recommendations and apply edits to boost match score, clarity, and impact before you apply.',
           image: '/help/copilot.webp',
         }
       }
@@ -37,10 +36,8 @@ const helpSliderData = [
 ]
 
 export default function DashboardHelpSection() {
-  const { width: windowWidth, height: windowHeight } = useWindowSize()
-
   return (
-    <div className="mx-4 xl:mx-auto max-w-5xl">
+    <div className="xl:mx-auto max-w-5xl">
       <Slider
         data={helpSliderData}
         settings={{
@@ -48,7 +45,7 @@ export default function DashboardHelpSection() {
           slidesToShow: 1,
           slidesToScroll: 1
         }}
-        handleButtonClick={() => router.push('/book-now')}
+        showItemTitlesList
       />
     </div>
   );

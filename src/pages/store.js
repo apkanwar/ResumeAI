@@ -1,6 +1,6 @@
 import Head from "next/head";
 import HomeNav from "@/components/navbar";
-import StoreContent from "@/components/store-content";
+import StoreContent from "@/components/dashboard/store-content";
 
 export default function Store() {
   return (

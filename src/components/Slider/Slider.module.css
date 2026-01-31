@@ -115,7 +115,7 @@
   flex-direction: column;
   border-radius: 16px;
   padding: 24px;
-  background-color: #e2e8f0;
+  background-color: #EEE;
 }
 
 .cardSingle>div {
@@ -130,7 +130,7 @@
   flex-direction: column;
   border-radius: 16px;
   padding: 24px;
-  background-color: #e2e8f0;
+  background-color: #EEE;
 }
 
 .content {
@@ -427,7 +427,7 @@
   }
 
   .sliderWrapper {
-    width: 100%;
+    width: 325px;
     overflow: hidden;
     gap: 12px;
   }

@@ -201,8 +201,8 @@ export default function FileUpload({ panelClassName = "bg-artic-blue", onAnalysi
   }
 
   return (
-    <div className="pb-24 text-sm md:text-md">
-      <section className={`mx-4 xl:mx-auto max-w-5xl flex flex-col ${panelClassName} rounded-lg p-8 md:px-20 md:py-12`}>
+    <div className="xl:pb-24 text-sm md:text-md">
+      <section className={`xl:mx-auto max-w-5xl flex flex-col ${panelClassName} rounded-lg p-8 md:px-20 md:py-12`}>
         <form autoComplete="off" className="font-main" onSubmit={storeUserResume}>
           <div className="flex flex-col w-full">
             <h2 className="font-semibold text-2xl font-headings my-4">
