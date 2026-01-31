@@ -4,7 +4,7 @@ import { saveToFirebase, saveParsedSections } from "@/lib/firebase-resume";
 import { getUserProfile } from "@/lib/firebase-profile";
 import { Close } from "@mui/icons-material";
 import { onAuthStateChanged } from "firebase/auth";
-import LoadingOverlay from "@/components/loading-overlay";
+import LoadingModal from "@/components/modals/loading-modal";
 
 export default function FileUpload({ panelClassName = "bg-artic-blue", onAnalysisComplete }) {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -270,7 +270,7 @@ export default function FileUpload({ panelClassName = "bg-artic-blue", onAnalysi
           </div>
         </form>
       </section>
-      <LoadingOverlay open={isBusy} message={loadingStage} />
+      <LoadingModal open={isBusy} message={loadingStage} />
     </div >
   )
 }

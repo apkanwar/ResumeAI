@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { CircleQuestionMark } from "lucide-react";
 
 export default function Navbar({ variant = "home", tokenLabel = "--" }) {
   const isDashboard = variant === "dashboard";
@@ -17,12 +18,16 @@ export default function Navbar({ variant = "home", tokenLabel = "--" }) {
             </Link>
           </div>
           {isDashboard ? (
-            <div className="hidden items-center gap-8 sm:flex">
-              <Link href="/faq" className="text-lg font-semibold text-slate-700 hover:text-rose-600 transition-colors">
+            <div className="hidden items-center gap-8 sm:flex uppercase tracking-wide text-base">
+              <Link
+                href="/faq"
+                className="inline-flex items-center gap-2 text-base font-semibold text-slate-700 border-slate-200 border rounded-full bg-white/80 px-4 py-1 shadow-sm hover:text-top-orange hover:bg-top-orange/10 transition-colors"
+              >
+                <CircleQuestionMark className="h-4 w-4" aria-hidden="true" />
                 FAQ
               </Link>
               <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-6 py-1 shadow-sm">
-                <span className="text-rose-600 uppercase tracking-wide text-xs">Tokens</span>
+                <span className="text-top-orange uppercase tracking-wide text-xs">Tokens</span>
                 <span className="text-slate-900 font-semibold text-base">{tokenLabel}</span>
               </div>
             </div>
@@ -30,8 +35,9 @@ export default function Navbar({ variant = "home", tokenLabel = "--" }) {
             <div className="flex items-center gap-8">
               <Link
                 href="/faq"
-                className="hidden text-lg font-semibold text-slate-700 transition-colors hover:text-rose-600 sm:inline-flex"
+                className="hidden items-center gap-2 text-base font-semibold text-slate-700 transition-colors border rounded-full shadow-sm border-slate-200 bg-white/80 px-4 py-1 hover:text-top-orange hover:bg-top-orange/10 sm:inline-flex"
               >
+                <CircleQuestionMark className="h-4 w-4" aria-hidden="true" />
                 FAQ
               </Link>
               <Link

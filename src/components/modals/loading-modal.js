@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export default function LoadingOverlay({ open, message }) {
+export default function LoadingModal({ open, message }) {
   useEffect(() => {
     if (!open) return;
     const prevOverflow = document.body.style.overflow;
@@ -29,4 +29,3 @@ export default function LoadingOverlay({ open, message }) {
     </div>
   );
 }
-

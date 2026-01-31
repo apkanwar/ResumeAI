@@ -21,7 +21,7 @@ export default function LogoutConfirmationModal({ open, onConfirm, onCancel }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-4 backdrop-blur-[2px]"
+      className="fixed inset-0 z-50 flex items-center justify-center px-4 backdrop-blur-[2px] bg-black/20"
       role="dialog"
       aria-modal="true"
       aria-label="Confirm logout"

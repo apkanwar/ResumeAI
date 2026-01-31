@@ -9,7 +9,7 @@ import { bootstrapProfileAfterSignIn, getUserProfile } from "@/lib/firebase-prof
 import DashboardNavItem from "@/components/dashboard/nav-item";
 import DashboardProfileSection from "@/components/dashboard/profile-section";
 import DashboardHelpSection from "@/components/dashboard/help-section";
-import LogoutConfirmationModal from "@/components/dashboard/logout-confirmation-modal";
+import LogoutConfirmationModal from "@/components/modals/logout-modal";
 import FileUpload from "@/components/dashboard/file-upload";
 import ManageUploads from "@/components/dashboard/manage-uploads";
 import StoreContent from "@/components/dashboard/store-content";

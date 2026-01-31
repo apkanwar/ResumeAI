@@ -6,6 +6,7 @@ import { getUserUploads, deleteResume, deleteSelected as deleteSelectedFn } from
 import { Delete, Visibility } from '@mui/icons-material';
 import ViewAnalysis from '@/components/analysis/view-analysis';
 import ScoreRing from '@/components/ring';
+import DeleteAnalysisModal from '@/components/modals/delete-modal';
 
 export default function ManageUploads({ panelClassName = "bg-artic-blue" }) {
   const [uploads, setUploads] = useState([]);
@@ -14,6 +15,9 @@ export default function ManageUploads({ panelClassName = "bg-artic-blue" }) {
   const [uid, setUid] = useState(null);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmMode, setConfirmMode] = useState("single");
 
   const analysisRef = useRef(null);
 
@@ -63,10 +67,20 @@ export default function ManageUploads({ panelClassName = "bg-artic-blue" }) {
     analysisRef.current?.open(item);
   };
 
-  const handleDelete = async (item) => {
+  const handleDelete = (item) => {
     if (!item?.id) return;
-    const ok = window.confirm('Delete this upload? This cannot be undone.');
-    if (!ok) return;
+    setDeleteTarget(item);
+    setConfirmMode("single");
+    setConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    const item = deleteTarget;
+    if (!item?.id) {
+      setConfirmOpen(false);
+      setConfirmMode("single");
+      return;
+    }
 
     setBusyId(item.id);
     setStatus({ state: 'loading', message: 'Deleting…' });
@@ -81,13 +95,24 @@ export default function ManageUploads({ panelClassName = "bg-artic-blue" }) {
       setStatus({ state: 'error', message: 'Failed to Delete.' });
     } finally {
       setBusyId(null);
+      setDeleteTarget(null);
+      setConfirmOpen(false);
+      setConfirmMode("single");
     }
   };
 
-  const handleBulkDelete = async () => {
+  const handleBulkDelete = () => {
     if (!selectedIds.size) return;
-    const ok = window.confirm(`Delete ${selectedIds.size} item(s)? This cannot be undone.`);
-    if (!ok) return;
+    setConfirmMode("bulk");
+    setConfirmOpen(true);
+  };
+
+  const confirmBulkDelete = async () => {
+    if (!selectedIds.size) {
+      setConfirmOpen(false);
+      setConfirmMode("single");
+      return;
+    }
     setBulkBusy(true);
     setStatus({ state: 'loading', message: 'Deleting selected…' });
     try {
@@ -105,6 +130,8 @@ export default function ManageUploads({ panelClassName = "bg-artic-blue" }) {
       setStatus({ state: 'error', message: 'One or more items failed to delete.' });
     } finally {
       setBulkBusy(false);
+      setConfirmOpen(false);
+      setConfirmMode("single");
     }
   };
 
@@ -231,6 +258,21 @@ export default function ManageUploads({ panelClassName = "bg-artic-blue" }) {
         </div>
       </section>
       <ViewAnalysis ref={analysisRef} />
+      <DeleteAnalysisModal
+        open={confirmOpen}
+        onCancel={() => {
+          setConfirmOpen(false);
+          setDeleteTarget(null);
+          setConfirmMode("single");
+        }}
+        onConfirm={confirmMode === "bulk" ? confirmBulkDelete : confirmDelete}
+        title={
+          confirmMode === "bulk"
+            ? `Are you sure you want to delete ${selectedIds.size} analysis${selectedIds.size === 1 ? "" : "es"}?`
+            : "Are you sure you want to delete this analysis?"
+        }
+        description="This action cannot be undone."
+      />
     </div>
   );
 }
