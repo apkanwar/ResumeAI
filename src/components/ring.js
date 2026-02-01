@@ -40,11 +40,14 @@ function strokeColor(v) {
   return "#dc2626"; // red-600
 }
 
-export function ScoreRing({ value = 0, label = "", size = 120, stroke = 12, className = "" }) {
+export function ScoreRing({ value = 0, label = "", size = 120, stroke = 12, className = "", color }) {
   const radius = (size - stroke) / 2;
   const circ = 2 * Math.PI * radius;
-  const pct = Math.max(0, Math.min(100, Number(value) || 0));
+  const numeric = Number(value);
+  const hasValue = value !== null && value !== undefined && Number.isFinite(numeric);
+  const pct = hasValue ? Math.max(0, Math.min(100, numeric)) : 0;
   const dash = (pct / 100) * circ;
+  const ringStroke = color ?? (hasValue ? strokeColor(pct) : "#e5e7eb");
 
   const tooltips = {
     Objective: "Structural Completeness, Clarity, Required Sections.",
@@ -67,7 +70,13 @@ export function ScoreRing({ value = 0, label = "", size = 120, stroke = 12, clas
         </InfoTooltip>
       }
 
-      <svg width={size} height={size} className="shrink-0 font-semibold" viewBox={`0 0 ${size} ${size}`}>
+      <svg
+        width={size}
+        height={size}
+        className="shrink-0 font-semibold"
+        viewBox={`0 0 ${size} ${size}`}
+        style={color ? { color } : undefined}
+      >
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -80,7 +89,7 @@ export function ScoreRing({ value = 0, label = "", size = 120, stroke = 12, clas
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke={strokeColor(pct)}
+          stroke={ringStroke}
           strokeWidth={stroke}
           fill="none"
           strokeDasharray={`${dash} ${circ - dash}`}
@@ -88,8 +97,15 @@ export function ScoreRing({ value = 0, label = "", size = 120, stroke = 12, clas
           strokeLinecap="round"
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
         />
-        <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fontSize={Math.max(12, size * 0.22)} style={{ fill: 'currentColor' }}>
-          {Math.round(pct)}
+        <text
+          x="50%"
+          y="50%"
+          dominantBaseline="middle"
+          textAnchor="middle"
+          fontSize={Math.max(12, size * 0.22)}
+          style={{ fill: hasValue ? 'currentColor' : '#94a3b8' }}
+        >
+          {hasValue ? Math.round(pct) : "—"}
         </text>
       </svg>
     </div>

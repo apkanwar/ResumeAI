@@ -3,10 +3,27 @@ import { useEffect, useState, useRef } from 'react';
 import { auth } from '@/lib/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getUserUploads, deleteResume, deleteSelected as deleteSelectedFn } from '@/lib/firebase-resume';
-import { Delete, Visibility } from '@mui/icons-material';
+import { AutoAwesome, CheckCircle, CloudUpload, Delete, ErrorOutline, HelpOutline, Visibility } from '@mui/icons-material';
 import ViewAnalysis from '@/components/analysis/view-analysis';
 import ScoreRing from '@/components/ring';
 import DeleteAnalysisModal from '@/components/modals/delete-modal';
+import { Trash } from 'lucide-react';
+
+const getStatusMeta = (value) => {
+  const normalized = typeof value === "string" ? value.toLowerCase() : "";
+  switch (normalized) {
+    case "uploaded":
+      return { label: "Uploaded", Icon: CloudUpload, className: "text-blue-600" };
+    case "parsed":
+      return { label: "Parsed", Icon: AutoAwesome, className: "text-indigo-600" };
+    case "analyzed":
+      return { label: "Analyzed", Icon: CheckCircle, className: "text-emerald-600" };
+    case "error":
+      return { label: "Error", Icon: ErrorOutline, className: "text-rose-600" };
+    default:
+      return { label: normalized ? normalized : "Unknown", Icon: HelpOutline, className: "text-slate-500" };
+  }
+};
 
 export default function ManageUploads({ panelClassName = "bg-artic-blue" }) {
   const [uploads, setUploads] = useState([]);
@@ -160,22 +177,100 @@ export default function ManageUploads({ panelClassName = "bg-artic-blue" }) {
           )}
 
           {hasUploads && (
-            <div className='bg-white pt-4 rounded-lg'>
-              <div className="flex items-center justify-between border-b-2 pb-2 px-4">
+            <div className='bg-white rounded-lg'>
+              <div className="flex items-center justify-between border-b-2 py-2">
                 <div className="">{uploads.length} Upload{uploads.length === 1 ? '' : 's'}</div>
                 <button
                   onClick={handleBulkDelete}
                   disabled={!selectedIds.size || bulkBusy}
-                  className="rounded-full border border-red-300 bg-red-50 px-3 py-1 text-red-700 hover:bg-red-100 disabled:opacity-50"
+                  className="inline-flex items-center justify-center rounded-full border border-red-300 bg-red-50 p-2 text-red-700 hover:bg-red-100 disabled:opacity-50"
+                  title={bulkBusy ? "Deleting…" : `Delete Selected (${selectedIds.size})`}
+                  aria-label={bulkBusy ? "Deleting selected uploads" : `Delete Selected (${selectedIds.size})`}
                 >
-                  {bulkBusy ? 'Deleting…' : `Delete Selected (${selectedIds.size})`}
+                  {bulkBusy ? (
+                    <svg className="animate-spin h-4 w-4 text-red-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                  ) : (
+                    <Delete fontSize="small" />
+                  )}
+                  <span className="ml-1 text-xs font-semibold text-red-700">{selectedIds.size}</span>
                 </button>
               </div>
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-left">
+              <div className="md:hidden flex flex-col py-4 gap-4">
+                {uploads.map((u) => {
+                  const s = u?.analysis?.ai?.scores || null;
+                  let overall = null;
+                  if (s && ['objective', 'subjective', 'design', 'employer'].every(k => typeof s[k] === 'number')) {
+                    overall = Math.round((s.objective + s.subjective + s.design + s.employer) / 4);
+                  }
+                  return (
+                    <div key={u.id} className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                      <div className="flex flex-row gap-3 items-start">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(u.id)}
+                          onChange={() => toggleOne(u.id)}
+                          aria-label={`Select ${u.file.name}`}
+                          disabled={bulkBusy}
+                          className="mt-1"
+                        />
+                        <div id='data' className='flex flex-col'>
+                          <span className="min-w-0">
+                            <span className="block truncate font-medium" title={u.file.name}>
+                              {u.file.name}
+                            </span>
+                          </span>
+                          <div className="mt-3 flex items-start justify-between">
+                            {/* Ring  */}
+                            <div className="text-center">
+                          {overall === null ? (
+                            <ScoreRing value={null} size='36' stroke='4' className='!gap-1' color="#e5e7eb" />
+                          ) : (
+                            <ScoreRing value={overall} size='36' stroke='4' className='!gap-1' />
+                          )}
+                              <div className="text-[11px] text-slate-500">Overall</div>
+                            </div>
+                            <div className='flex flex-row gap-2 pt-1'>
+                              <button
+                                type="button"
+                                className={`rounded-full border border-dm-black p-1 text-xs ${u.status === 'analyzed' ? 'hover:bg-gray-200' : 'opacity-60 cursor-not-allowed'}`}
+                                disabled={u.status !== 'analyzed'}
+                                onClick={() => viewAnalysis(u)}
+                                title="View Analysis"
+                              >
+                                <Visibility fontSize='small' />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(u)}
+                                className="rounded-full border border-red-700 bg-red-50 p-1 text-xs text-red-700 hover:bg-red-100 disabled:opacity-60"
+                                disabled={bulkBusy || busyId === u.id}
+                                title="Delete Upload"
+                              >
+                                {busyId === u.id ? (
+                                  <svg className="animate-spin h-4 w-4 text-red-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                  </svg>
+                                ) : (
+                                  <Delete fontSize="small" />
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="hidden md:block overflow-x-auto">
+                <table className="min-w-full table-fixed text-left text-sm md:text-base">
                   <thead>
                     <tr className="border-b-2 bg-gray-200">
-                      <th className="px-3 py-2">
+                      <th className="px-2 py-2 md:px-4 w-10">
                         <input
                           type="checkbox"
                           checked={allSelected}
@@ -183,24 +278,25 @@ export default function ManageUploads({ panelClassName = "bg-artic-blue" }) {
                           aria-label="Select all"
                         />
                       </th>
-                      <th className="px-3 py-2">File</th>
-                      <th className="px-3 py-2">Overall</th>
-                      <th className="px-3 py-2">Status</th>
-                      <th className="px-3 py-2">Uploaded</th>
-                      <th className="px-3 py-2">Actions</th>
+                      <th className="px-2 py-2 md:px-4 w-full">File</th>
+                      <th className="px-2 py-2 md:px-4 text-center whitespace-nowrap md:text-left w-20 md:w-auto">Overall</th>
+                      <th className="px-2 py-2 md:px-4 hidden whitespace-nowrap md:table-cell">Status</th>
+                      <th className="px-2 py-2 md:px-4 hidden whitespace-nowrap md:table-cell">Uploaded</th>
+                      <th className="px-2 py-2 md:px-4 text-center whitespace-nowrap md:text-left w-20 md:w-auto">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200/60">
                     {uploads.map((u) => {
                       const created = u.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
                       const s = u?.analysis?.ai?.scores || null;
+                      const statusMeta = getStatusMeta(u?.status);
                       let overall = null;
                       if (s && ['objective', 'subjective', 'design', 'employer'].every(k => typeof s[k] === 'number')) {
                         overall = Math.round((s.objective + s.subjective + s.design + s.employer) / 4);
                       }
                       return (
                         <tr key={u.id} className="align-middle">
-                          <td className="px-3 py-4">
+                          <td className="px-2 py-4 md:px-4">
                             <input
                               type="checkbox"
                               checked={selectedIds.has(u.id)}
@@ -209,18 +305,20 @@ export default function ManageUploads({ panelClassName = "bg-artic-blue" }) {
                               disabled={bulkBusy}
                             />
                           </td>
-                          <td className="px-3 py-2 font-medium">{u.file.name}</td>
-                          <td className="px-3 py-2">
+                          <td className="px-2 py-2 md:px-4 font-medium truncate" title={u.file.name}>
+                            {u.file.name}
+                          </td>
+                          <td className="px-2 py-2 md:px-4 text-center whitespace-nowrap md:text-left">
                             {overall === null ? (
-                              <span className="text-gray-400 text-sm">—</span>
+                              <ScoreRing value={null} size='32' stroke='4' className='md:!items-start' color="#e5e7eb" />
                             ) : (
-                              <ScoreRing value={overall} size='32' stroke='4' className='!items-start' />
+                              <ScoreRing value={overall} size='32' stroke='4' className='md:!items-start' />
                             )}
                           </td>
-                          <td className="px-3 py-2 capitalize">{u.status}</td>
-                          <td className="px-3 py-2">{created}</td>
-                          <td className="px-3 py-2">
-                            <div className="flex items-center gap-3">
+                          <td className="px-2 py-2 md:px-4 hidden whitespace-nowrap md:table-cell">{statusMeta.label}</td>
+                          <td className="px-2 py-2 md:px-4 hidden whitespace-nowrap md:table-cell">{created}</td>
+                          <td className="px-2 py-2 md:px-4 text-center whitespace-nowrap md:text-left">
+                            <div className="flex items-center justify-center gap-3 md:justify-start">
                               <button
                                 type="button"
                                 className={`rounded-full border border-dm-black p-1 text-xs ${u.status === 'analyzed' ? 'hover:bg-gray-200' : 'opacity-60 cursor-not-allowed'}`}

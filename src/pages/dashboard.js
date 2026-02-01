@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Head from "next/head";
+import { NextSeo } from "next-seo";
 import Link from "next/link";
 import { ChartBar, CircleQuestionMark, LogOut, ScanSearch, ShoppingBag, UserRound } from "lucide-react";
 import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
@@ -94,9 +94,26 @@ export default function Dashboard() {
 
   return (
     <>
-      <Head>
-        <title>Resume Analyzer - Dashboard</title>
-      </Head>
+      <NextSeo
+        title="Resume Analyzer - Dashboard"
+        description="Manage your resume analyses, results, profile, and credits in one place."
+        canonical={process.env.NEXT_PUBLIC_SITE_URL + "/dashboard"}
+        openGraph={{
+          url: process.env.NEXT_PUBLIC_SITE_URL + "/dashboard",
+          title: "Resume Analyzer - Dashboard",
+          description: "Manage your resume analyses, results, profile, and credits in one place.",
+          images: [
+            {
+              url: process.env.NEXT_PUBLIC_SITE_URL + "/full-logo.png",
+              width: 1024,
+              height: 1024,
+              alt: "Resume Analyzer Logo",
+              type: "image/png"
+            }
+          ],
+          siteName: "Resume Analyzer"
+        }}
+      />
 
       <div className="min-h-screen bg-gradient-to-br from-[#fff7ed] via-[#fdf2f8] to-[#e0f2fe] text-slate-900">
         <HomeNav variant="dashboard" tokenLabel={tokenLabel} />

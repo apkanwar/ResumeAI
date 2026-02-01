@@ -78,18 +78,20 @@ const ViewAnalysis = forwardRef(function ViewAnalysis(_, ref) {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
-            <div className="relative z-10 w-full max-w-3xl h-[80vh] overflow-y-auto rounded-xl bg-white p-5 shadow-xl">
+            <div className="mx-4 relative z-10 w-full max-w-3xl h-[80vh] overflow-y-auto rounded-xl bg-white p-5 shadow-xl">
                 {/* Sticky Header */}
                 <div className="sticky top-0 z-10 bg-white border-b-2 border-plum p-5">
-                    <div className="flex items-center justify-between font-headings">
-                        <div className="flex flex-row items-center gap-6">
+                    <div className="flex flex-col gap-3 font-headings md:flex-row md:items-center md:justify-between">
+                        <div className="flex flex-col md:flex-row md:items-center md:gap-6">
                             <div className="min-w-0">
                                 <h2 className="text-xl font-semibold font-headings">Resume Analysis</h2>
                                 <div className="text-sm text-gray-500 truncate">{resume?.file?.name}</div>
                             </div>
-                            <ScoreRing value={overall} size='40' stroke='4' />
+                            <div className="hidden md:block">
+                                <ScoreRing value={overall} size='40' stroke='4' />
+                            </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="hidden items-center gap-2 md:flex">
                             <button onClick={downloadAnalysis}
                                 className="rounded-full border border-dm-black px-2 py-0.5 hover:bg-gray-200"
                                 title="Download Analysis (JSON)">
@@ -100,6 +102,21 @@ const ViewAnalysis = forwardRef(function ViewAnalysis(_, ref) {
                                 title="Close">
                                 <Close />
                             </button>
+                        </div>
+                        <div className="flex items-center gap-3 md:hidden">
+                            <ScoreRing value={overall} size='40' stroke='4' />
+                            <div className="flex items-center gap-2">
+                                <button onClick={downloadAnalysis}
+                                    className="rounded-full border border-dm-black px-2 py-0.5 hover:bg-gray-200"
+                                    title="Download Analysis (JSON)">
+                                    <Download />
+                                </button>
+                                <button onClick={() => setOpen(false)}
+                                    className="rounded-full border border-dm-black px-2 py-0.5 hover:bg-gray-200"
+                                    title="Close">
+                                    <Close />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -3,30 +3,46 @@ import { Disclosure } from '@headlessui/react';
 import { useEffect, useRef, useState } from 'react';
 
 export default function FAQContent() {
-  const [faqQA, setFAQ] = useState([]);
-
-  const ref = useRef();
-  const isVisible = useIsVisible(ref);
-
-  useEffect(() => {
-    fetchFAQ();
-  }, []);
-
-  const fetchFAQ = async () => {
-    try {
-      const response = await fetch('/api/faq');
-      if (!response.ok) {
-        throw new Error('Failed to Fetch Data');
-      }
-      const { FAQ } = await response.json();
-      setFAQ(FAQ);
-    } catch (error) {
-      console.error('Error Fetching Data:', error);
+  const faqQA = [
+    {
+      id: 1,
+      question: "What file types do you support?",
+      answer: "We currently support PDF and DOCX resumes. If a file fails to parse, try exporting to a clean PDF and re-uploading."
+    },
+    {
+      id: 2,
+      question: "How does the scoring work?",
+      answer: "Scores are grouped into objective, subjective, design, and employer-fit categories. We combine those to show an overall score and provide targeted improvements."
+    },
+    {
+      id: 3,
+      question: "How long does an analysis take?",
+      answer: "Most resumes are parsed and analyzed in under a minute. Large or complex files can take a bit longer."
+    },
+    {
+      id: 4,
+      question: "What are parse tokens?",
+      answer: "Each analysis uses one token. You can purchase additional tokens in the store."
+    },
+    {
+      id: 5,
+      question: "Can I delete my uploads?",
+      answer: "Yes. Go to your dashboard results and delete any upload. This removes the file and its associated analysis."
+    },
+    {
+      id: 6,
+      question: "Is my resume data private?",
+      answer: "Your uploads are tied to your account, and only you can view them in your dashboard. You can delete them at any time."
+    },
+    {
+      id: 7,
+      question: "What should I do if the analysis looks off?",
+      answer: "Double-check that your resume has clear headings (Experience, Education, Skills) and clean formatting. If needed, re-upload a simplified PDF."
     }
-  };
+  ]
 
   return (
-    <div ref={ref} className={`${isVisible ? "opacity-100" : "opacity-0"} transition-opacity ease-in duration-1000 mx-auto max-w-5xl px-6 pt-32 pb-12 text-slate-900`}>
+    <div className="opacity-100 transition-opacity ease-in duration-1000 mx-auto max-w-5xl px-6 pt-32 pb-12 text-slate-900">
       <h1 className='text-5xl font-headings font-semibold pb-16'>Frequently Asked Questions</h1>
       <div className="space-y-4">
         {faqQA.map((q) => (
@@ -49,9 +65,9 @@ export default function FAQContent() {
                     />
                   </svg>
                 </Disclosure.Button>
-                <Disclosure.Panel className="text-lg font-main text-slate-700 bg-transparent pb-3">
+                <Disclosure.Panel className="font-main text-slate-700 bg-transparent pb-3">
                   {open ? (
-                    <p className="whitespace-pre-line text-slate-700 text-xl">{q.answer}</p>
+                    <p className="whitespace-pre-line text-slate-700">{q.answer}</p>
                   ) : null}
                 </Disclosure.Panel>
                 <hr className="border-slate-200" />
