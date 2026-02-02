@@ -30,14 +30,12 @@ export default function Home() {
         }}
       />
 
-      <div className="min-h-screen bg-gradient-to-br from-[#fff7ed] via-[#fdf2f8] to-[#e0f2fe] text-slate-900">
-        <Navbar />
-        <Hero />
-        <Features />
-        <Numbers />
-        <CTA />
-        <Footer />
-      </div>
+      <Navbar />
+      <Hero />
+      <Features />
+      <Numbers />
+      <CTA />
+      <Footer />
     </>
   )
 }

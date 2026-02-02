@@ -4,7 +4,7 @@ import Script from 'next/script';
 
 export default function App({ Component, pageProps }) {
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
+    <main className="min-h-screen bg-gradient-to-br from-[#fff7ed] via-[#fdf2f8] to-[#e0f2fe] text-slate-900">
       <DefaultSeo
         openGraph={{
           type: 'website',

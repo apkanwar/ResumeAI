@@ -27,11 +27,9 @@ export default function FAQ() {
                 }}
             />
 
-            <div className="min-h-screen bg-gradient-to-br from-[#fff7ed] via-[#fdf2f8] to-[#e0f2fe] text-slate-900">
-                <HomeNav />
-                <FAQContent />
-                <HomeFooter />
-            </div>
+            <HomeNav />
+            <FAQContent />
+            <HomeFooter />
         </>
     )
 }
