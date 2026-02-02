@@ -32,16 +32,16 @@ export default function TermsOfService() {
                     <header className="space-y-4 pb-8">
                         <p className="text-2xl font-semibold uppercase text-slate-600">Terms of Service - Resume Analyzer</p>
                         <div className="space-y-1 text-sm text-slate-600">
-                            <p><span className="font-semibold text-slate-800">Site/Service:</span> Resume Analyzer ("Resume Analyzer," the "Service")</p>
+                            <p><span className="font-semibold text-slate-800">Site/Service:</span> Resume Analyzer (&quot;Resume Analyzer,&quot; the &quot;Service&quot;)</p>
                             <p><span className="font-semibold text-slate-800">Website:</span> resumeanalyzer.me</p>
-                            <p><span className="font-semibold text-slate-800">Operated by:</span> Resume Analyzer, a service operated by RezPoint Inc. ("RezPoint," "we," "us," "our")</p>
+                            <p><span className="font-semibold text-slate-800">Operated by:</span> Resume Analyzer, a service operated by RezPoint Inc. (&quot;RezPoint,&quot; &quot;we,&quot; &quot;us,&quot; &quot;our&quot;)</p>
                             <p><span className="font-semibold text-slate-800">Effective date:</span> February 1, 2026</p>
                             <p><span className="font-semibold text-slate-800">Last updated:</span> February 1, 2026</p>
                         </div>
                     </header>
 
                     <section className="space-y-4 text-base leading-relaxed text-slate-700">
-                        <p>These Terms of Service ("Terms") form a binding agreement between you ("you," "user") and RezPoint Inc. governing your access to and use of the Service. By accessing or using the Service, you agree to these Terms.</p>
+                        <p>These Terms of Service (&quot;Terms&quot;) form a binding agreement between you (&quot;you,&quot; &quot;user&quot;) and RezPoint Inc. governing your access to and use of the Service. By accessing or using the Service, you agree to these Terms.</p>
                         <p>If you do not agree, do not use the Service.</p>
                     </section>
 
@@ -95,7 +95,7 @@ export default function TermsOfService() {
                         <h2 className="text-2xl font-headings font-semibold text-slate-900">5) User content and license grant</h2>
                         <div className="space-y-3 text-slate-700">
                             <h3 className="text-lg font-headings font-semibold text-slate-900">Your ownership</h3>
-                            <p>You retain any ownership rights you have in the content you upload or submit, including resumes, job descriptions, and any inputs ("User Content").</p>
+                            <p>You retain any ownership rights you have in the content you upload or submit, including resumes, job descriptions, and any inputs (&quot;User Content&quot;).</p>
                         </div>
                         <div className="space-y-3 text-slate-700">
                             <h3 className="text-lg font-headings font-semibold text-slate-900">License you grant to us and our parent company</h3>
@@ -243,7 +243,7 @@ export default function TermsOfService() {
 
                     <section className="space-y-6">
                         <h2 className="text-2xl font-headings font-semibold text-slate-900">15) Changes to these Terms</h2>
-                        <p className="text-slate-700">We may update these Terms from time to time. We will post the updated Terms and update the "Last updated" date. Continued use of the Service after updates means you accept the revised Terms.</p>
+                        <p className="text-slate-700">We may update these Terms from time to time. We will post the updated Terms and update the &quot;Last updated&quot; date. Continued use of the Service after updates means you accept the revised Terms.</p>
                     </section>
 
                     <hr className="my-10 border-slate-200" />

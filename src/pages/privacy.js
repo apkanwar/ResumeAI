@@ -31,7 +31,7 @@ export default function Privacy() {
                 <header className="space-y-4 pb-8">
                     <p className="text-2xl font-semibold uppercase text-slate-900">Privacy Policy - Resume Analyzer</p>
                     <div className="space-y-1 text-sm text-slate-600">
-                        <p><span className="font-semibold text-slate-800">Site/Service:</span> Resume Analyzer (the "Service")</p>
+                        <p><span className="font-semibold text-slate-800">Site/Service:</span> Resume Analyzer (the &quot;Service&quot;)</p>
                         <p><span className="font-semibold text-slate-800">Operated by:</span> Resume Analyzer (a service operated under RezPoint Inc.)</p>
                         <p><span className="font-semibold text-slate-800">Effective date:</span> February 1, 2026</p>
                         <p><span className="font-semibold text-slate-800">Last updated:</span> February 1, 2026</p>
@@ -39,7 +39,7 @@ export default function Privacy() {
                 </header>
 
                 <section className="space-y-4 text-base leading-relaxed text-slate-700">
-                    <p>This Privacy Policy explains how Resume Analyzer ("Resume Analyzer," "we," "us," "our") collects, uses, discloses, stores, and protects information when you access or use our Service.</p>
+                    <p>This Privacy Policy explains how Resume Analyzer (&quot;Resume Analyzer,&quot; &quot;we,&quot; &quot;us,&quot; &quot;our&quot;) collects, uses, discloses, stores, and protects information when you access or use our Service.</p>
                     <p>By using the Service, you consent to the practices described in this Privacy Policy. If you do not agree, do not use the Service.</p>
                 </section>
 
@@ -151,7 +151,7 @@ export default function Privacy() {
                 <hr className="my-10 border-slate-200" />
 
                 <section className="space-y-6">
-                    <h2 className="text-2xl font-headings font-semibold text-slate-900">6) Deletion and retention (including "deleted" results)</h2>
+                    <h2 className="text-2xl font-headings font-semibold text-slate-900">6) Deletion and retention (including &quot;deleted&quot; results)</h2>
 
                     <div className="space-y-3 text-slate-700">
                         <h3 className="text-lg font-headings font-semibold text-slate-900">User deletion in the UI</h3>
@@ -261,7 +261,7 @@ export default function Privacy() {
 
                 <section className="space-y-6">
                     <h2 className="text-2xl font-headings font-semibold text-slate-900">13) Changes to this Privacy Policy</h2>
-                    <p className="text-slate-700">We may update this policy from time to time. We will update the "Last updated" date and post the revised version. Continued use after updates means you accept the updated policy.</p>
+                    <p className="text-slate-700">We may update this policy from time to time. We will update the &quot;Last updated&quot; date and post the revised version. Continued use after updates means you accept the updated policy.</p>
                 </section>
 
                 <hr className="my-10 border-slate-200" />
