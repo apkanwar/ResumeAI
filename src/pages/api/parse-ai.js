@@ -235,7 +235,7 @@ async function reserveParseToken(uid) {
     const data = snap.data() || {};
     let tokens = Number(data.parseTokens);
     if (!Number.isFinite(tokens)) {
-      tokens = 1;
+      tokens = 2;
     }
     if (tokens <= 0) {
       const err = new Error('No parse tokens remaining');

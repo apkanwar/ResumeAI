@@ -11,7 +11,7 @@ const DEFAULT_PROFILE = {
     locations: [],            // [string]
     notes: '',
     role: 'user',
-    parseTokens: 1,
+    parseTokens: 2,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
 };
@@ -32,8 +32,8 @@ export async function ensureUserProfile() {
     if (snap.exists()) {
         const data = snap.data();
         if (typeof data.parseTokens !== 'number' || Number.isNaN(data.parseTokens)) {
-            await updateDoc(ref, { parseTokens: 1, updatedAt: serverTimestamp() });
-            return { ...data, parseTokens: 1 };
+            await updateDoc(ref, { parseTokens: 2, updatedAt: serverTimestamp() });
+            return { ...data, parseTokens: 2 };
         }
         return data;
     }
@@ -58,8 +58,8 @@ export async function getUserProfile(options = {}) {
     if (ensureParseTokens) {
         const val = data?.parseTokens;
         if (typeof val !== 'number' || Number.isNaN(val)) {
-            await updateDoc(ref, { parseTokens: 1, updatedAt: serverTimestamp() });
-            return { ...data, parseTokens: 1 };
+            await updateDoc(ref, { parseTokens: 2, updatedAt: serverTimestamp() });
+            return { ...data, parseTokens: 2 };
         }
     }
     return data;
