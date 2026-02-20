@@ -26,238 +26,147 @@ export default function TermsOfService() {
                 }}
             />
 
-            <div className="min-h-screen bg-gradient-to-br from-[#fff7ed] via-[#fdf2f8] to-[#e0f2fe] text-slate-900">
-                <HomeNav />
-                <main className="mx-auto max-w-4xl px-6 pb-16 pt-28">
-                    <header className="space-y-4 pb-8">
-                        <p className="text-2xl font-semibold uppercase text-slate-600">Terms of Service - Resume Analyzer</p>
-                        <div className="space-y-1 text-sm text-slate-600">
-                            <p><span className="font-semibold text-slate-800">Site/Service:</span> Resume Analyzer (&quot;Resume Analyzer,&quot; the &quot;Service&quot;)</p>
-                            <p><span className="font-semibold text-slate-800">Website:</span> resumeanalyzer.me</p>
-                            <p><span className="font-semibold text-slate-800">Operated by:</span> Resume Analyzer, a service operated by RezPoint Inc. (&quot;RezPoint,&quot; &quot;we,&quot; &quot;us,&quot; &quot;our&quot;)</p>
-                            <p><span className="font-semibold text-slate-800">Effective date:</span> February 1, 2026</p>
-                            <p><span className="font-semibold text-slate-800">Last updated:</span> February 1, 2026</p>
-                        </div>
-                    </header>
+            <HomeNav />
+            <main className="mx-auto w-full max-w-5xl px-6 pb-16 pt-28">
+                <div className="rounded-2xl border border-slate-200/80 dark:border-slate-700/60 bg-white/80 dark:bg-midnight/80 backdrop-blur-md shadow-sm px-6 sm:px-10 py-8">
+                    <h1 className="text-4xl sm:text-5xl font-headings font-semibold tracking-tight text-center text-slate-900 dark:text-white">
+                        Resume Analyzer Terms of Service
+                    </h1>
+                    <p className="mt-3 text-sm opacity-80 text-center font-main text-slate-700 dark:text-slate-300">
+                        Last Updated: Feb 20, 2026
+                    </p>
 
-                    <section className="space-y-4 text-base leading-relaxed text-slate-700">
-                        <p>These Terms of Service (&quot;Terms&quot;) form a binding agreement between you (&quot;you,&quot; &quot;user&quot;) and RezPoint Inc. governing your access to and use of the Service. By accessing or using the Service, you agree to these Terms.</p>
-                        <p>If you do not agree, do not use the Service.</p>
-                    </section>
+                    <div className="mt-8 space-y-7 text-base leading-relaxed font-main text-slate-800 dark:text-slate-100">
+                        <p>
+                            These Terms are a binding agreement between you (&quot;you,&quot; &quot;user&quot;) and RezPoint Inc. (&quot;we,&quot; &quot;us,&quot; &quot;our&quot;) for your use of Resume Analyzer (the &quot;Service&quot;).
+                            By using the Service, you agree to them. If you do not agree, do not use the Service.
+                        </p>
 
-                    <hr className="my-10 border-slate-200" />
-
-                    <section className="space-y-6">
-                        <h2 className="text-2xl font-headings font-semibold text-slate-900">1) Eligibility and account</h2>
-                        <ol className="list-decimal space-y-2 pl-5 text-slate-700">
-                            <li>You must be at least the age of majority in your jurisdiction (or have permission of a parent/guardian) to use the Service.</li>
-                            <li>You are responsible for maintaining the confidentiality of your account and for all activity under your account.</li>
-                            <li>You agree to provide accurate information and to keep your account information up to date.</li>
-                        </ol>
-                    </section>
-
-                    <hr className="my-10 border-slate-200" />
-
-                    <section className="space-y-6">
-                        <h2 className="text-2xl font-headings font-semibold text-slate-900">2) Privacy Policy</h2>
-                        <p className="text-slate-700">Your use of the Service is also subject to our Privacy Policy, which explains how we collect, use, and share information. If there is a conflict between these Terms and the Privacy Policy on a data-handling issue, the Privacy Policy will generally control for that issue.</p>
-                    </section>
-
-                    <hr className="my-10 border-slate-200" />
-
-                    <section className="space-y-6">
-                        <h2 className="text-2xl font-headings font-semibold text-slate-900">3) The Service and AI outputs</h2>
-                        <ol className="list-decimal space-y-2 pl-5 text-slate-700">
-                            <li>The Service provides resume parsing and analysis features that may produce automated outputs (scores, summaries, recommendations, etc.).</li>
-                            <li>Outputs are generated by automated systems and may be inaccurate, incomplete, or unsuitable for your specific circumstances.</li>
-                            <li>The Service does not provide legal, financial, or employment guarantees. You are responsible for how you use the outputs.</li>
-                        </ol>
-                    </section>
-
-                    <hr className="my-10 border-slate-200" />
-
-                    <section className="space-y-6">
-                        <h2 className="text-2xl font-headings font-semibold text-slate-900">4) Acceptable use</h2>
-                        <p className="text-slate-700">You agree not to:</p>
-                        <ul className="list-disc space-y-2 pl-5 text-slate-700">
-                            <li>Upload content you do not have the right to use or share.</li>
-                            <li>Upload illegal content or content that violates privacy, confidentiality, or intellectual property rights.</li>
-                            <li>Attempt to reverse engineer, scrape, overload, disrupt, or bypass security measures of the Service.</li>
-                            <li>Use the Service for unlawful, harmful, or fraudulent activity, including token abuse, chargeback abuse, or account sharing designed to avoid fees.</li>
-                            <li>Introduce malware or attempt unauthorized access to accounts, systems, or data.</li>
-                        </ul>
-                        <p className="text-slate-700">We may suspend or terminate access if we believe you violated these Terms.</p>
-                    </section>
-
-                    <hr className="my-10 border-slate-200" />
-
-                    <section className="space-y-6">
-                        <h2 className="text-2xl font-headings font-semibold text-slate-900">5) User content and license grant</h2>
-                        <div className="space-y-3 text-slate-700">
-                            <h3 className="text-lg font-headings font-semibold text-slate-900">Your ownership</h3>
-                            <p>You retain any ownership rights you have in the content you upload or submit, including resumes, job descriptions, and any inputs (&quot;User Content&quot;).</p>
-                        </div>
-                        <div className="space-y-3 text-slate-700">
-                            <h3 className="text-lg font-headings font-semibold text-slate-900">License you grant to us and our parent company</h3>
-                            <p>By uploading or submitting User Content, you grant Resume Analyzer and RezPoint Inc. a worldwide, perpetual, irrevocable, sublicensable, transferable, royalty-free license to host, store, reproduce, modify, adapt, translate, create derivative works from, process, display, and use your User Content:</p>
-                            <ul className="list-disc space-y-2 pl-5">
-                                <li>To operate, provide, and improve the Service.</li>
-                                <li>To maintain records and prevent fraud/abuse (including token/refund dispute prevention).</li>
-                                <li>For analytics, research, product development, and business operations.</li>
-                                <li>And for any other purpose to the maximum extent permitted by applicable law.</li>
+                        <section className="space-y-2">
+                            <h2 className="text-2xl font-headings font-semibold text-slate-900 dark:text-white">Using Resume Analyzer</h2>
+                            <ul className="list-disc pl-6 space-y-1">
+                                <li>You must be at least the age of majority in your jurisdiction (or have parent/guardian permission).</li>
+                                <li>Sign-in uses your Google account; keep your credentials secure. You are responsible for activity under your account.</li>
+                                <li>Provide accurate information and keep it current.</li>
                             </ul>
-                            <p>Where feasible, we may use aggregated and/or de-identified data for broader business purposes, but we do not guarantee that all uses will be de-identified.</p>
-                        </div>
-                    </section>
+                        </section>
 
-                    <hr className="my-10 border-slate-200" />
+                        <section className="space-y-2">
+                            <h2 className="text-2xl font-headings font-semibold text-slate-900 dark:text-white">What the Service Provides</h2>
+                            <ul className="list-disc pl-6 space-y-1">
+                                <li>AI-powered parsing and analysis of resumes against job descriptions, producing scores, highlights, and recommendations.</li>
+                                <li>Outputs are automated and may be inaccurate, incomplete, or unsuitable for your specific situation. We do not guarantee employment or outcomes.</li>
+                            </ul>
+                        </section>
 
-                    <section className="space-y-6">
-                        <h2 className="text-2xl font-headings font-semibold text-slate-900">6) Tokens, purchases, and billing (Stripe)</h2>
-                        <div className="space-y-3 text-slate-700">
-                            <h3 className="text-lg font-headings font-semibold text-slate-900">Token system</h3>
-                            <ol className="list-decimal space-y-2 pl-5">
-                                <li>Certain features require tokens.</li>
-                                <li>Tokens have no cash value, are not legal tender, and are not transferable unless we explicitly allow it.</li>
-                                <li>Token pricing and feature costs may change at any time. Changes do not affect tokens already spent.</li>
-                            </ol>
-                        </div>
+                        <section className="space-y-2">
+                            <h2 className="text-2xl font-headings font-semibold text-slate-900 dark:text-white">Acceptable Use</h2>
+                            <ul className="list-disc pl-6 space-y-1">
+                                <li>Do not upload illegal content or content you lack rights to use.</li>
+                                <li>Do not try to scrape, reverse engineer, bypass security, overload the Service, or share accounts to avoid fees.</li>
+                                <li>No malware, fraud, chargeback abuse, or other harmful or unlawful activity.</li>
+                            </ul>
+                            <p>We may suspend or terminate access if we believe these rules were violated.</p>
+                        </section>
 
-                        <div className="space-y-3 text-slate-700">
-                            <h3 className="text-lg font-headings font-semibold text-slate-900">Payments</h3>
-                            <p>Payments are processed through Stripe. You authorize us (through Stripe) to charge your selected payment method for token purchases, taxes (if applicable), and other charges you agree to.</p>
-                        </div>
+                        <section className="space-y-2">
+                            <h2 className="text-2xl font-headings font-semibold text-slate-900 dark:text-white">Your Content &amp; License to Us</h2>
+                            <ul className="list-disc pl-6 space-y-1">
+                                <li>You keep ownership of the resumes, job descriptions, and inputs you provide (&quot;User Content&quot;).</li>
+                                <li>You grant Resume Analyzer and RezPoint Inc. a worldwide, transferable, sublicensable, royalty-free license to host, process, modify, analyze, and create derivatives of User Content to operate, improve, secure, and audit the Service (including fraud/chargeback prevention and analytics).</li>
+                                <li>We may use aggregated or de-identified data for business purposes where feasible.</li>
+                            </ul>
+                        </section>
 
-                        <div className="space-y-3 text-slate-700">
-                            <h3 className="text-lg font-headings font-semibold text-slate-900">No refunds for spent tokens</h3>
-                            <ol className="list-decimal space-y-2 pl-5">
-                                <li>All token purchases are final.</li>
-                                <li>If you purchase tokens and spend any of them, those spent tokens are not refundable.</li>
-                                <li>We may, at our discretion, provide refunds or credits in limited cases (e.g., verified technical failure), but we are not obligated to do so except where required by law.</li>
-                                <li>You agree not to initiate chargebacks or payment disputes for tokens that have been spent, except in cases of unauthorized transactions or as otherwise required by law.</li>
-                            </ol>
-                        </div>
+                        <section className="space-y-2">
+                            <h2 className="text-2xl font-headings font-semibold text-slate-900 dark:text-white">Tokens &amp; Billing (Stripe)</h2>
+                            <ul className="list-disc pl-6 space-y-1">
+                                <li>Some features require tokens. Tokens have no cash value and are not transferable unless we state otherwise.</li>
+                                <li>Token prices and feature costs may change; changes do not affect tokens already spent.</li>
+                                <li>Stripe processes payments. You authorize charges to your selected method for tokens and taxes (if applicable).</li>
+                                <li>Spent tokens are not refundable except where required by law. If you suspect unauthorized charges, contact us and your payment provider promptly.</li>
+                                <li>We may suspend accounts or block transactions if we suspect fraud or abuse.</li>
+                            </ul>
+                        </section>
 
-                        <div className="space-y-3 text-slate-700">
-                            <h3 className="text-lg font-headings font-semibold text-slate-900">Fraud and abuse</h3>
-                            <p>We may suspend accounts, block transactions, and/or withhold access to tokens if we reasonably suspect fraud, abuse, or unauthorized use.</p>
-                        </div>
-                    </section>
+                        <section className="space-y-2">
+                            <h2 className="text-2xl font-headings font-semibold text-slate-900 dark:text-white">Privacy</h2>
+                            <p>Your use of the Service is also governed by our Privacy Policy. If these Terms and the Privacy Policy conflict on data-handling, the Privacy Policy generally controls for that issue.</p>
+                        </section>
 
-                    <hr className="my-10 border-slate-200" />
+                        <section className="space-y-2">
+                            <h2 className="text-2xl font-headings font-semibold text-slate-900 dark:text-white">Retention &amp; Deletion</h2>
+                            <ul className="list-disc pl-6 space-y-1">
+                                <li>You can delete certain results in the UI. Deletion removes them from your active view.</li>
+                                <li>Operational, billing, and security records (including token usage/purchases) may be retained for up to five (5) years for auditing, fraud prevention, legal, tax, and accounting purposes, or longer if legally required.</li>
+                            </ul>
+                        </section>
 
-                    <section className="space-y-6">
-                        <h2 className="text-2xl font-headings font-semibold text-slate-900">7) Deletion, retention, and recordkeeping</h2>
-                        <ol className="list-decimal space-y-2 pl-5 text-slate-700">
-                            <li>You may delete certain results or content through the Service.</li>
-                            <li>Even if you delete content, you acknowledge and agree that we may retain copies of data and logs for business and legal purposes (including transaction auditing and token-usage proof) for up to five (5) years, as described in the Privacy Policy.</li>
-                            <li>We may retain longer where required or permitted by law (e.g., legal holds, dispute resolution, compliance).</li>
-                        </ol>
-                    </section>
+                        <section className="space-y-2">
+                            <h2 className="text-2xl font-headings font-semibold text-slate-900 dark:text-white">Service Changes &amp; Availability</h2>
+                            <ul className="list-disc pl-6 space-y-1">
+                                <li>We may modify, suspend, or discontinue any part of the Service at any time.</li>
+                                <li>We do not guarantee uninterrupted or error-free availability; outages and maintenance may occur.</li>
+                            </ul>
+                        </section>
 
-                    <hr className="my-10 border-slate-200" />
+                        <section className="space-y-2">
+                            <h2 className="text-2xl font-headings font-semibold text-slate-900 dark:text-white">Third-Party Services</h2>
+                            <p>The Service relies on Google (sign-in, Firebase storage/database), Groq (AI processing), and Stripe (payments). Their terms and privacy policies apply; we are not responsible for them.</p>
+                        </section>
 
-                    <section className="space-y-6">
-                        <h2 className="text-2xl font-headings font-semibold text-slate-900">8) Service availability and changes</h2>
-                        <ol className="list-decimal space-y-2 pl-5 text-slate-700">
-                            <li>We may modify, suspend, or discontinue any part of the Service at any time.</li>
-                            <li>We do not guarantee that the Service will be uninterrupted, error-free, or available at all times.</li>
-                            <li>Maintenance, outages, provider failures, and network issues may occur.</li>
-                        </ol>
-                    </section>
+                        <section className="space-y-2">
+                            <h2 className="text-2xl font-headings font-semibold text-slate-900 dark:text-white">Warranty Disclaimer</h2>
+                            <p>The Service is provided &quot;as is&quot; and &quot;as available&quot; without warranties of any kind (express, implied, or statutory), including merchantability, fitness for a particular purpose, non-infringement, accuracy, or reliability.</p>
+                        </section>
 
-                    <hr className="my-10 border-slate-200" />
+                        <section className="space-y-2">
+                            <h2 className="text-2xl font-headings font-semibold text-slate-900 dark:text-white">Limitation of Liability</h2>
+                            <ul className="list-disc pl-6 space-y-1">
+                                <li>To the maximum extent permitted by law, we are not liable for indirect, incidental, special, consequential, punitive, or lost-profit damages.</li>
+                                <li>We are not liable for loss, theft, unauthorized access, breach, alteration, unavailability, or destruction of data, including due to third parties or events outside our control.</li>
+                                <li>If liability cannot be excluded, our total liability in any 12-month period is limited to the amount you paid for tokens during that period, unless prohibited by law.</li>
+                            </ul>
+                        </section>
 
-                    <section className="space-y-6">
-                        <h2 className="text-2xl font-headings font-semibold text-slate-900">9) Third-party services</h2>
-                        <p className="text-slate-700">The Service relies on third-party services and infrastructure, including:</p>
-                        <ul className="list-disc space-y-2 pl-5 text-slate-700">
-                            <li>Google (sign-in)</li>
-                            <li>Google Firebase (storage/database)</li>
-                            <li>Groq (AI processing)</li>
-                            <li>Stripe (payments)</li>
-                        </ul>
-                        <p className="text-slate-700">We are not responsible for third-party services, and your use of them may be governed by their terms.</p>
-                    </section>
+                        <section className="space-y-2">
+                            <h2 className="text-2xl font-headings font-semibold text-slate-900 dark:text-white">Indemnification</h2>
+                            <p>You agree to defend, indemnify, and hold harmless Resume Analyzer and RezPoint Inc. from claims arising out of your use of the Service, your User Content, your violation of these Terms, or your violation of law or third-party rights.</p>
+                        </section>
 
-                    <hr className="my-10 border-slate-200" />
+                        <section className="space-y-2">
+                            <h2 className="text-2xl font-headings font-semibold text-slate-900 dark:text-white">Termination</h2>
+                            <ul className="list-disc pl-6 space-y-1">
+                                <li>You may stop using the Service anytime.</li>
+                                <li>We may suspend or terminate access if we believe you violated these Terms or created risk/fraud. Tokens may be forfeited to the maximum extent permitted by law in cases of fraud/abuse; spent tokens remain non-refundable.</li>
+                                <li>Sections that should survive termination (licenses, disclaimers, limits of liability, indemnity, governing law) will survive.</li>
+                            </ul>
+                        </section>
 
-                    <section className="space-y-6">
-                        <h2 className="text-2xl font-headings font-semibold text-slate-900">10) Disclaimer of warranties</h2>
-                        <p className="text-slate-700">To the maximum extent permitted by law, the Service is provided “as is” and “as available” without warranties of any kind, whether express, implied, or statutory, including implied warranties of merchantability, fitness for a particular purpose, non-infringement, and accuracy.</p>
-                        <p className="text-slate-700">We do not warrant that:</p>
-                        <ul className="list-disc space-y-2 pl-5 text-slate-700">
-                            <li>The Service will meet your requirements.</li>
-                            <li>Outputs will be accurate or reliable.</li>
-                            <li>The Service will be secure or free from harmful components.</li>
-                        </ul>
-                    </section>
+                        <section className="space-y-2">
+                            <h2 className="text-2xl font-headings font-semibold text-slate-900 dark:text-white">Governing Law &amp; Venue</h2>
+                            <p>These Terms are governed by the laws of the Province of Ontario and the federal laws of Canada applicable therein. Disputes will be heard in the courts located in Ontario, Canada.</p>
+                        </section>
 
-                    <hr className="my-10 border-slate-200" />
+                        <section className="space-y-2">
+                            <h2 className="text-2xl font-headings font-semibold text-slate-900 dark:text-white">Changes to These Terms</h2>
+                            <p>We may update these Terms from time to time. The latest version (and date) will always appear here. Continuing to use the Service after changes means you accept the updated Terms.</p>
+                        </section>
 
-                    <section className="space-y-6">
-                        <h2 className="text-2xl font-headings font-semibold text-slate-900">11) Limitation of liability</h2>
-                        <p className="text-slate-700">To the maximum extent permitted by law:</p>
-                        <ol className="list-decimal space-y-2 pl-5 text-slate-700">
-                            <li>Resume Analyzer and RezPoint Inc. will not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits, revenues, data, goodwill, or business opportunities arising from or related to your use of the Service.</li>
-                            <li>We are not liable for any loss, theft, unauthorized access, breach, alteration, unavailability, or destruction of data, including due to third-party actions, system failures, or events beyond our reasonable control.</li>
-                            <li>If liability cannot be excluded, our total liability for all claims in any 12-month period will not exceed the total amount you paid to us for tokens in that period except where such limitation is prohibited by law.</li>
-                        </ol>
-                        <p className="text-slate-700">Some jurisdictions do not allow certain limitations; in those cases, limitations apply only to the extent permitted.</p>
-                    </section>
-
-                    <hr className="my-10 border-slate-200" />
-
-                    <section className="space-y-6">
-                        <h2 className="text-2xl font-headings font-semibold text-slate-900">12) Indemnification</h2>
-                        <p className="text-slate-700">You agree to defend, indemnify, and hold harmless Resume Analyzer and RezPoint Inc. from and against any claims, liabilities, damages, losses, and expenses (including reasonable legal fees) arising out of or related to:</p>
-                        <ul className="list-disc space-y-2 pl-5 text-slate-700">
-                            <li>Your use of the Service.</li>
-                            <li>Your User Content.</li>
-                            <li>Your violation of these Terms.</li>
-                            <li>Your violation of any law or third-party rights.</li>
-                        </ul>
-                    </section>
-
-                    <hr className="my-10 border-slate-200" />
-
-                    <section className="space-y-6">
-                        <h2 className="text-2xl font-headings font-semibold text-slate-900">13) Termination</h2>
-                        <ol className="list-decimal space-y-2 pl-5 text-slate-700">
-                            <li>You may stop using the Service at any time.</li>
-                            <li>We may suspend or terminate your access immediately if we believe you violated these Terms, used the Service fraudulently, or created risk or legal exposure for us.</li>
-                            <li>Upon termination, tokens may be forfeited to the maximum extent permitted by law (especially in cases of fraud/abuse). Spent tokens remain non-refundable.</li>
-                        </ol>
-                        <p className="text-slate-700">Sections that by nature should survive termination will survive (including license grant, disclaimers, limitation of liability, indemnity, and governing law).</p>
-                    </section>
-
-                    <hr className="my-10 border-slate-200" />
-
-                    <section className="space-y-6">
-                        <h2 className="text-2xl font-headings font-semibold text-slate-900">14) Governing law and venue</h2>
-                        <p className="text-slate-700">These Terms are governed by the laws of the Province of Ontario and the federal laws of Canada applicable therein, without regard to conflict of law rules.</p>
-                        <p className="text-slate-700">You agree that any dispute arising out of or relating to these Terms or the Service will be brought in the courts located in Ontario, Canada, and you submit to their jurisdiction.</p>
-                    </section>
-
-                    <hr className="my-10 border-slate-200" />
-
-                    <section className="space-y-6">
-                        <h2 className="text-2xl font-headings font-semibold text-slate-900">15) Changes to these Terms</h2>
-                        <p className="text-slate-700">We may update these Terms from time to time. We will post the updated Terms and update the &quot;Last updated&quot; date. Continued use of the Service after updates means you accept the revised Terms.</p>
-                    </section>
-
-                    <hr className="my-10 border-slate-200" />
-
-                    <section className="space-y-4 pb-8">
-                        <h2 className="text-2xl font-headings font-semibold text-slate-900">16) Contact</h2>
-                        <div className="space-y-1 text-slate-700">
-                            <p><span className="font-semibold text-slate-900">Support:</span> atinderpaulk@rezpoint.xyz</p>
-                            <p><span className="font-semibold text-slate-900">Operator:</span> RezPoint Inc.</p>
-                        </div>
-                    </section>
-                </main>
-                <HomeFooter />
-            </div>
+                        <section className="space-y-2">
+                            <h2 className="text-2xl font-headings font-semibold text-slate-900 dark:text-white">Contact</h2>
+                            <p>
+                                Email:{' '}
+                                <a className="underline underline-offset-4 text-eazy-main-100 hover:text-top-orange" href="mailto:atinderpaulk@rezpoint.xyz">
+                                    atinderpaulk@rezpoint.xyz
+                                </a>
+                            </p>
+                            <p>Operator: RezPoint Inc.</p>
+                        </section>
+                    </div>
+                </div>
+            </main>
+            <HomeFooter />
         </>
     )
 }
